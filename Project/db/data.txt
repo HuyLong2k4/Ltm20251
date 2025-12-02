@@ -1,0 +1,83 @@
+-- Users (role_id: 1=admin, 2=user)
+INSERT INTO users (name, username, password, role_id) VALUES
+('Nguyen Van A', 'admin', 'admin123', 1),
+('Tran Thi B', 'user1', 'pass123', 2),
+('Le Van C', 'user2', 'pass456', 2),
+('Pham Thi D', 'user3', 'pass789', 2);
+
+-- Cinemas
+INSERT INTO cinemas (name, address) VALUES
+('CGV Vincom', '191 Ba Trieu, Hai Ba Trung, Ha Noi'),
+('Lotte Cinema', '54 Lieu Giai, Ba Dinh, Ha Noi'),
+('Galaxy Cinema', '116 Nguyen Du, Hai Ba Trung, Ha Noi');
+
+-- Rooms (status: 1=active, 0=inactive)
+INSERT INTO rooms (name, quantity_seats, cinema_id, status) VALUES
+('Phong 1', 100, 1, 1),
+('Phong 2', 80, 1, 1),
+('Phong 3', 120, 2, 1),
+('Phong 4', 90, 2, 1),
+('Phong 5', 110, 3, 1);
+
+-- Seats (status: 1=available, 0=broken)
+-- Room 1: 100 seats (10 rows x 10 seats)
+INSERT INTO seats (room_id, status) VALUES
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1),
+(1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 1), (1, 0);
+
+-- Categories
+INSERT INTO categories (name) VALUES
+('Hanh dong'),
+('Kinh di'),
+('Hai huoc'),
+('Tinh cam'),
+('Khoa hoc vien tuong');
+
+-- Films (show_time in minutes)
+INSERT INTO films (title, category_id, show_time) VALUES
+('Avengers: Endgame', 1, 180),
+('The Conjuring 3', 2, 112),
+('Mr. Bean Holiday', 3, 90),
+('Titanic', 4, 195),
+('Interstellar', 5, 169),
+('Fast & Furious 9', 1, 143),
+('It Chapter Two', 2, 169);
+
+-- Premiered Time
+INSERT INTO premiered_time (start_time, finish_time) VALUES
+('09:00', '11:00'),
+('11:30', '13:30'),
+('14:00', '16:00'),
+('16:30', '18:30'),
+('19:00', '21:00'),
+('21:30', '23:30');
+
+-- Premiered Time Film (mapping films to cinemas and time slots)
+INSERT INTO premiered_time_film (film_id, premiered_time_id, cinema_id) VALUES
+-- CGV Vincom
+(1, 1, 1), (1, 3, 1), (1, 5, 1),
+(2, 2, 1), (2, 4, 1),
+(3, 1, 1), (3, 6, 1),
+-- Lotte Cinema
+(4, 2, 2), (4, 4, 2), (4, 6, 2),
+(5, 1, 2), (5, 5, 2),
+(6, 3, 2),
+-- Galaxy Cinema
+(7, 1, 3), (7, 3, 3), (7, 5, 3),
+(1, 2, 3), (1, 6, 3);
+
+-- Tickets (some booked tickets)
+INSERT INTO tickets (user_id, premiered_time_film_id, seat_id) VALUES
+(2, 1, 15),  -- user1 dat ve xem Avengers 9h tai CGV, ghe 15
+(2, 1, 16),  -- user1 dat ve xem Avengers 9h tai CGV, ghe 16
+(3, 2, 45),  -- user2 dat ve xem Avengers 14h tai CGV, ghe 45
+(4, 4, 22),  -- user3 dat ve xem The Conjuring 11h30 tai CGV, ghe 22
+(2, 7, 33);  -- user1 dat ve xem Mr. Bean 9h tai CGV, ghe 33
