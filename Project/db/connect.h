@@ -12,6 +12,10 @@ void connectDatabase(MYSQL **connection) {
         printf("Couldn't connect to database\n");
         exit(EXIT_FAILURE);
     }
-    mysql_real_connect(*connection, SERVER, USER, PASSWORD, DATABASE, 0, NULL, 0);
-
+    
+    if(mysql_real_connect(*connection, SERVER, USER, PASSWORD, DATABASE, 0, NULL, 0) == NULL) {
+        printf("Error connecting to database: %s\n", mysql_error(*connection));
+        mysql_close(*connection);
+        exit(EXIT_FAILURE);
+    }
 }

@@ -1,0 +1,22 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
+char* getTypeMessage(char *message);
+
+void makeLoginMessage(char *username, char *password, char *message);
+
+void getLoginMessage(char *username, char *password);
+
+void makeRegisterMessage(char *name,char *username, char *password, char *message);
+
+void getRegisterMessage(char *name, char *username, char *password);
+
+void makeChangePasswordMessage(char *username, char *oldPassword, char *newPassword, char *message);
+
+void getChangePasswordMessage(char *username, char *oldPassword, char *newPassword);
+
+void makeLogoutMessage(char *message);
+
+void getLogoutMessage(char *username);
+
+#endif
