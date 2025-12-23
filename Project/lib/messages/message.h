@@ -1,6 +1,10 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 char* getTypeMessage(char *message);
 
 void makeLoginMessage(char *username, char *password, char *message);
@@ -18,5 +22,9 @@ void getChangePasswordMessage(char *username, char *oldPassword, char *newPasswo
 void makeLogoutMessage(char *message);
 
 void getLogoutMessage(char *username);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
