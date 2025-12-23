@@ -1,0 +1,59 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+#include <QStackedWidget>
+#include <QPushButton>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include "../client/headers/menu.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
+
+class LoginDialog;
+class RegisterDialog;
+class ChangePasswordDialog;
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(int sockfd, QWidget *parent = nullptr);
+    ~MainWindow();
+    
+    void showWelcomeScreen();
+    void showUserScreen();
+    void setUsername(const QString &username);
+
+private slots:
+    void onLoginClicked();
+    void onRegisterClicked();
+    void onLogoutClicked();
+    void onChangePasswordClicked();
+    void onExitClicked();
+
+private:
+    QStackedWidget *stackedWidget;
+    QWidget *welcomePage;
+    QWidget *userPage;
+    
+    QPushButton *loginBtn;
+    QPushButton *registerBtn;
+    QPushButton *exitBtn;
+    
+    QPushButton *logoutBtn;
+    QPushButton *changePasswordBtn;
+    
+    QLabel *userLabel;
+    QLabel *statusLabel;
+    
+    int sockfd;
+    QString currentUsername;
+    bool isLoggedIn;
+};
+
+#endif // MAINWINDOW_H
