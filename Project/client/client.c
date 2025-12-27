@@ -20,14 +20,14 @@ int main(int argc, char **argv) {
     // Khởi tạo kết nối Socket
     int sockfd;
     struct sockaddr_in servaddr;
-
+    
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("\nERROR: ");
         return 0;
     }
 
     memset(&servaddr, 0, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
+    servaddr.sin_family = AF_INET;  // IPV4
     servaddr.sin_addr.s_addr = inet_addr(argv[1]);
     servaddr.sin_port = htons(atoi(argv[2]));
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
                     handleRequestUser(sockfd, username, message);
                 } 
                 else if(login_status == LOGIN_SUCCESS_ADMIN){
-                    // handleRequestAdmin(sockfd, username, message);
+                    handleRequestAdmin(sockfd, username, message);
                 }
                 break;
             }

@@ -66,6 +66,7 @@ void viewLogin(char username[], char password[]);
 void viewRegister(char *name, char *username, char *password);
 void viewChangePassword(char *oldPassword, char *newPassword);
 void viewUser();
+
 // void viewChangePassword(char *oldPassword, char *newPassword);
 
 /*----------ADD FILM--------*/
@@ -106,4 +107,6 @@ void getSeatID(char *seat_id);
 /*----------END BOOK TICKET--------*/
 
 
+void viewChangePassword(char *oldPassword, char *newPassword);
+void viewManager();
 #endif

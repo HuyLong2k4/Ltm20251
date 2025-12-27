@@ -67,6 +67,10 @@ void makeBookTicketMessage(char *showtime_id, char *seat_id, char *message);
 void getBookTicketMessage(char *showtime_id, char *seat_id);
 /*----------END BOOK TICKET--------*/
 
+void makeAnnounceFilmMessage(char *film_id, char *cinema_id, char *premiered_time_id, char *date, char *message);
+
+void getAnnounceFilmMessage(char *film_id, char *cinema_id, char *premiered_time_id, char *date);
+
 #ifdef __cplusplus
 }
 #endif
