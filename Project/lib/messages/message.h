@@ -23,6 +23,50 @@ void makeLogoutMessage(char *message);
 
 void getLogoutMessage(char *username);
 
+/*----------ADD FILM--------*/
+void makeAddNewFilmMessage(
+    char *title,
+    char *category_id,
+    char *show_time,
+    char *description,
+    char *message
+);
+/*----------END ADD FILM--------*/
+
+/*----------FIND FILM--------*/
+void makeSearchFilmByTitleMessage(char *title, char *message);
+void getTitleFromMessage(char *title);
+/*----------END FIND FILM--------*/
+
+/*----------BROWSE FILM--------*/
+
+void makeShowCategoryMessage(char *message);
+void makeShowCinemaMessage(char *message);
+void makeShowPremieredTimeMessage(char *message);
+
+void makeBrowseFollowCategoryMessage(char *category_id, char *message);
+void makeBrowseFollowCinemaMessage(char *cinema_id, char *message);
+void makeBrowseFollowPremieredTimeMessage(char *premiered_time_id, char *message);
+
+void getCategoryIDFromMessage(char *message, char *category_id);
+void getCinemaIDFromMessage(char *message, char *cinema_id);
+void getPremieredTimeIDFromMessage(char *message, char *premiered_time_id);
+/*----------END BROWSE FILM--------*/
+
+/*----------BOOK TICKET--------*/
+void makeShowFilmMessage(char *message);
+
+void makeShowCinemaByFilmMessage(char *film_id, char *message);
+
+void makeShowTimeByFilmCinemaMessage(char *film_id, char *cinema_id, char *message);
+
+void makeShowSeatMessage(char *showtime_id, char *message);
+
+void makeBookTicketMessage(char *showtime_id, char *seat_id, char *message);
+
+void getBookTicketMessage(char *showtime_id, char *seat_id);
+/*----------END BOOK TICKET--------*/
+
 #ifdef __cplusplus
 }
 #endif
