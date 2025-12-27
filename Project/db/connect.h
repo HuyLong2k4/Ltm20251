@@ -19,3 +19,4 @@ void connectDatabase(MYSQL **connection) {
         exit(EXIT_FAILURE);
     }
 }
+

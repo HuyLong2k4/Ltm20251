@@ -4,6 +4,9 @@
 #include "../../lib/socket/socket.h"
 #include "../../lib/messages/message.h"
 
+/*====================RESULT CODE====================*/
+
+/*----------ACCOUNT----------*/
 #define LOGIN_SUCCESS_USER 1010
 #define LOGIN_SUCCESS_ADMIN 1011
 #define LOGIN_FAIL 2011
@@ -22,11 +25,85 @@
 #define LOGOUT_SUCCESS_MESSAGE "You have been successfully logged out!!\n"
 #define CHANGE_PASSWORD_SUCCESS_MESSAGE "Changed password successfully\n"
 #define CHANGE_PASSWORD_FAIL_MESSAGE "Changed password fail!!\n" 
+/*----------END ACCOUNT----------*/
+
+/*----------FIND FILM--------*/
+#define FIND_FILM_SUCCESS 1073
+#define FIND_FILM_SUCCESS_MESSAGE "The information of the film you need search:\n"
+#define FIND_FILM_FAIL 2072 
+#define FIND_FILM_FAIL_MESSAGE "No film has been found!!\n"
+/*----------FIND FILM--------*/
+
+/*----------BROWSE FILM--------*/
+#define BROWSE_CATEGORY_SUCCESS 1070
+#define BROWSE_CATEGORY_SUCCESS_MESSAGE "Browse follow category successfully!!\n"
+#define BROWSE_THEATER_SUCCESS 1071
+#define BROWSE_THEATER_SUCCESS_MESSAGE "Browse follow theater successfully!!\n"
+#define BROWSE_TIME_SUCCESS 1072
+#define BROWSE_TIME_SUCCESS_MESSAGE "Browse follow time"
+#define BROWSE_FAIL 2071
+#define BROWSE_FAIL_MESSAGE "No film has been found!!\n"
+/*----------END BROWSE FILM--------*/
+
+/*----------BOOK TICKET--------*/
+#define BOOK_TICKET_SUCCESS 1200
+#define BOOK_TICKET_SUCCESS_MESSAGE "Booking ticket successfully!\n"
+#define BOOK_TICKET_FAIL 2200
+#define BOOK_TICKET_FAIL_MESSAGE "Booking ticket failed! Seat may be occupied.\n"
+/*----------END BOOK TICKET--------*/
+
+/*----------ADD FILM--------*/
+#define ADD_FILM_SUCCESS 1040 
+#define ADD_FILM_SUCCESS_MESSAGE "Add new film successfully!!\n"
+#define ADD_FILM_FAIL 2041
+#define ADD_FILM_FAIL_MESSAGE "ADD new film failed!!\n"
+/*----------END ADD FILM--------*/
+
+/*====================END RESULT CODE====================*/
 
 void viewWelcome();
 void viewLogin(char username[], char password[]);
 void viewRegister(char *name, char *username, char *password);
 void viewChangePassword(char *oldPassword, char *newPassword);
 void viewUser();
-void viewChangePassword(char *oldPassword, char *newPassword);
+// void viewChangePassword(char *oldPassword, char *newPassword);
+
+/*----------ADD FILM--------*/
+void addNewFilm(int sockfd, char title[], char category_id[], char show_time[], char description[]);
+
+/*----------END ADD FILM--------*/
+
+/*----------FIND FILM--------*/
+void getTitleFilm(char title[]);
+/*----------END FIND FILM--------*/
+
+/*----------BROWSE FILM--------*/
+void browseFilm();
+
+// void getCategoryID(char **category_id);
+// void getCinemaID(char **cinema_id);
+
+void getCategoryID(char *category_id);
+void getPremieredTimeID(char *time_id);
+
+/*----------END BROWSE FILM--------*/
+
+void getCinemaID(char *cinema_id);
+
+/*----------BOOK TICKET--------*/
+void bookTicket();
+
+void getInput(const char *prompt, char *out, int max_len);
+
+void getFilmID(char *film_id);
+
+
+
+void getShowTimeID(char *showtime_id);
+
+void getSeatID(char *seat_id);
+
+/*----------END BOOK TICKET--------*/
+
+
 #endif

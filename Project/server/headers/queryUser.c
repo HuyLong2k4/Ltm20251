@@ -121,7 +121,7 @@ int registerUser(MYSQL *connection, user newUser) {
     }
     mysql_free_result(result);
 
-sprintf(query, "INSERT INTO users (name, username, password, role_id) VALUES ('%s','%s', '%s', %ld)", newUser.name, newUser.username, newUser.password, newUser.role_id);
+    sprintf(query, "INSERT INTO users (name, username, password, role_id) VALUES ('%s','%s', '%s', %ld)", newUser.name, newUser.username, newUser.password, newUser.role_id);
     if (mysql_query(connection, query)) {
         fprintf(stderr, "Register Error: %s\n", mysql_error(connection));
         return 0;
@@ -151,4 +151,21 @@ int changePassword(MYSQL *connection, char *username, char *oldPassword, char *n
     }
 
     return 1;
+}
+
+// Lấy user_id từ username
+int getUserIdByUsername(MYSQL *conn, const char *username) {
+    char query[256];
+    sprintf(query, "SELECT id FROM users WHERE username='%s'", username);
+
+    if (mysql_query(conn, query)) return -1;
+    MYSQL_RES *res = mysql_store_result(conn);
+    if (!res) return -1;
+
+    MYSQL_ROW row = mysql_fetch_row(res);
+    int id = -1;
+    if (row) id = atoi(row[0]);
+
+    mysql_free_result(res);
+    return id;
 }
