@@ -17,7 +17,7 @@
 
 // Đảm bảo các define này khớp với menu.h ở Client
 #define LOGIN_SUCCESS_USER 1010
-#define LOGIN_SUCCESS_ADMIN 1011
+#define LOGIN_SUCCESS_MANAGER 1011
 #define LOGIN_FAIL 2011
 #define REGISTER_SUCCESS 1020
 #define REGISTER_FAIL 2021

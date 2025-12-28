@@ -74,7 +74,7 @@ void LoginDialog::onLoginClicked()
     // Receive response
     int result = recvResult(sockfd);
     
-    if (result == LOGIN_SUCCESS_USER || result == LOGIN_SUCCESS_ADMIN) {
+    if (result == LOGIN_SUCCESS_USER || result == LOGIN_SUCCESS_MANAGER) {
         username = user;
         accept();
     } else if (result == LOGIN_FAIL) {

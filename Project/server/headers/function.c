@@ -8,7 +8,7 @@
 
 
 #define LOGIN_SUCCESS_USER 1010
-#define LOGIN_SUCCESS_ADMIN 1011
+#define LOGIN_SUCCESS_MANAGER 1011
 #define LOGIN_FAIL 2011
 #define LOGIN_ALREADY 2012
 #define LOGOUT_SUCCESS 1030
@@ -66,7 +66,7 @@ void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, c
     }
     else if (check == 1) {
         addToListLoginedAccount(arr, &username);
-        sendResult(connfd, LOGIN_SUCCESS_ADMIN);
+        sendResult(connfd, LOGIN_SUCCESS_MANAGER);
     }
     else if (check == 2) {
         addToListLoginedAccount(arr, &username);
