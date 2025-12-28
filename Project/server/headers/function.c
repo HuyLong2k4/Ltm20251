@@ -28,6 +28,8 @@
 #define BROWSE_FAIL 2071
 #define FIND_FILM_SUCCESS 1073
 #define FIND_FILM_FAIL 2072
+#define SHOW_CATEGORY_SUCCESS 1060
+#define SHOW_CATEGORY_FAIL 2060
 #define VIEW_CHAIR_SUCCESS 1080
 #define VIEW_CHAIR_FAIL 2081
 #define CHOOSE_CHAIR_SUCCESS 1090
@@ -212,19 +214,17 @@ void handleShowCategory(MYSQL *conn, int connfd){
     sprintf(query, "SELECT id, name FROM categories");
 
     if(mysql_query(conn, query) != 0){
-        sendMessage(connfd, "Cant load the list of categories!");
         sendMessage(connfd, "END");  
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
-        sendMessage(connfd, "No categories available!");
         sendMessage(connfd, "END"); 
         if(res) mysql_free_result(res);
         return;
     }
-
+    
     // Gửi từng dòng, không ghép hết vào 1 message
     MYSQL_ROW row;
     while((row = mysql_fetch_row(res))){
@@ -625,8 +625,10 @@ void handleBookTicket(
 /*-----ADD FILM-----*/
 void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time) {
     char query[2048];
-    char response[512];
+    
+    printf("[DEBUG] ADD_FILM params - title: %s, category_id: %s, show_time: %s\n", title, category_id, show_time);
 
+    // 1. Check if film already exists
     sprintf(query, 
         "SELECT COUNT(*) FROM films WHERE LOWER(title) = LOWER('%s')", title);
     
@@ -635,12 +637,13 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
         MYSQL_ROW row = mysql_fetch_row(result);
         if (row && atoi(row[0]) > 0) {
             mysql_free_result(result);
-            sprintf(response, "Film '%s' already exists.", title);
-            sendMessage(connfd, response);
+            printf("[DEBUG] Film already exists\n");
+            sendResult(connfd, 2082); // FILM_EXISTS
             return;
         }
         mysql_free_result(result);
     }
+    
     // 2. Check category_id exists
     sprintf(query, 
         "SELECT COUNT(*) FROM categories WHERE id = %s", category_id);
@@ -649,25 +652,27 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
         MYSQL_ROW row = mysql_fetch_row(result);
         if (row && atoi(row[0]) == 0) {
             mysql_free_result(result);
-            sprintf(response, "Category ID '%s' does not exist.", category_id);
-            sendMessage(connfd, response);
+            printf("[DEBUG] Category does not exist\n");
+            sendResult(connfd, 2081); // ADD_FILM_FAIL
             return;
         }
         mysql_free_result(result);
     }
 
-    // 4. Insert new film
+    // 3. Insert new film
     sprintf(query, 
-        "INSERT INTO films (title, category_id, show_time) VALUES ('%s', %s, '%s')", title, category_id, show_time);
+        "INSERT INTO films (title, category_id, show_time) VALUES ('%s', %s, '%s')", 
+        title, category_id, show_time);
+    
+    printf("[DEBUG] Executing query: %s\n", query);
+    
     if (mysql_query(conn, query) == 0) {
         int film_id = mysql_insert_id(conn);
-        sprintf(response, "Film '%s' added successfully with ID %d.", title, film_id);
-        sendMessage(connfd, response);
         printf("[LOG] Added film: %s (ID: %d)\n", title, film_id);
+        sendResult(connfd, 1080); // ADD_FILM_SUCCESS
     } else {
-        sprintf(response, "Failed to add film '%s'", title);
-        sendMessage(connfd, response);
-        printf("[ERROR] Failed to add film: %s\n", title);
+        printf("[ERROR] Failed to add film: %s\n", mysql_error(conn));
+        sendResult(connfd, 2081); // ADD_FILM_FAIL
     }
 }
 
@@ -792,7 +797,7 @@ void handleChangeUserRole(MYSQL *conn, int connfd) {
     
     printf("[DEBUG] Executing query: %s\n", query);
     if(mysql_query(conn, query) == 0 && mysql_affected_rows(conn) > 0){
-        printf("[DEBUG] Update successful, affected rows: %llu\n", mysql_affected_rows(conn));
+        printf("[DEBUG] Update successful, affected rows: %lu\n", mysql_affected_rows(conn));
         sendResult(connfd, UPDATE_USER_ROLE_SUCCESS);
     } else {
         printf("[DEBUG] Update failed: %s\n", mysql_error(conn));

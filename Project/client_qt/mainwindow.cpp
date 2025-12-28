@@ -6,6 +6,7 @@
 #include "searchfilmdialog.h"
 #include "bookticketdialog.h"
 #include "admindialog.h"
+#include "managerdialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -148,7 +149,15 @@ void MainWindow::onLoginClicked()
             // After admin dialog closes, return to welcome screen
             statusLabel->setText("");
             showWelcomeScreen();
-        } else if (loginResult == LOGIN_SUCCESS_USER || loginResult == LOGIN_SUCCESS_MANAGER) {
+        } else if (loginResult == LOGIN_SUCCESS_MANAGER) {
+            // Show manager dialog
+            ManagerDialog managerDialog(sockfd, username, this);
+            managerDialog.exec();
+            
+            // After manager dialog closes, return to welcome screen
+            statusLabel->setText("");
+            showWelcomeScreen();
+        } else if (loginResult == LOGIN_SUCCESS_USER) {
             // Show normal user screen
             showUserScreen();
         }

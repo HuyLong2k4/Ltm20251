@@ -37,7 +37,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = client_qt1.0.0
-DISTDIR = /home/khanh/project/Network\ Programming/Ltm20251/Project/client_qt/.tmp/client_qt1.0.0
+DISTDIR = /home/long/Ltm20251/Project/client_qt/.tmp/client_qt1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) -lmysqlclient -lm -pthread /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL -lpthread   
@@ -61,6 +61,7 @@ SOURCES       = main.cpp \
 		searchfilmdialog.cpp \
 		bookticketdialog.cpp \
 		admindialog.cpp \
+		managerdialog.cpp \
 		../lib/socket/socket.c \
 		../lib/messages/message.c moc_mainwindow.cpp \
 		moc_logindialog.cpp \
@@ -69,7 +70,8 @@ SOURCES       = main.cpp \
 		moc_browsefilmdialog.cpp \
 		moc_searchfilmdialog.cpp \
 		moc_bookticketdialog.cpp \
-		moc_admindialog.cpp
+		moc_admindialog.cpp \
+		moc_managerdialog.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		logindialog.o \
@@ -79,6 +81,7 @@ OBJECTS       = main.o \
 		searchfilmdialog.o \
 		bookticketdialog.o \
 		admindialog.o \
+		managerdialog.o \
 		socket.o \
 		message.o \
 		moc_mainwindow.o \
@@ -88,7 +91,8 @@ OBJECTS       = main.o \
 		moc_browsefilmdialog.o \
 		moc_searchfilmdialog.o \
 		moc_bookticketdialog.o \
-		moc_admindialog.o
+		moc_admindialog.o \
+		moc_managerdialog.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -174,6 +178,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		searchfilmdialog.h \
 		bookticketdialog.h \
 		admindialog.h \
+		managerdialog.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h \
 		../client/headers/menu.h \
@@ -187,6 +192,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		searchfilmdialog.cpp \
 		bookticketdialog.cpp \
 		admindialog.cpp \
+		managerdialog.cpp \
 		../lib/socket/socket.c \
 		../lib/messages/message.c
 QMAKE_TARGET  = client_qt
@@ -372,8 +378,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h logindialog.h registerdialog.h changepassworddialog.h browsefilmdialog.h searchfilmdialog.h bookticketdialog.h admindialog.h ../lib/socket/socket.h ../lib/messages/message.h ../client/headers/menu.h ../lib/users/user.h ../lib/loginedUser.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp logindialog.cpp registerdialog.cpp changepassworddialog.cpp browsefilmdialog.cpp searchfilmdialog.cpp bookticketdialog.cpp admindialog.cpp ../lib/socket/socket.c ../lib/messages/message.c $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.h logindialog.h registerdialog.h changepassworddialog.h browsefilmdialog.h searchfilmdialog.h bookticketdialog.h admindialog.h managerdialog.h ../lib/socket/socket.h ../lib/messages/message.h ../client/headers/menu.h ../lib/users/user.h ../lib/loginedUser.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp logindialog.cpp registerdialog.cpp changepassworddialog.cpp browsefilmdialog.cpp searchfilmdialog.cpp bookticketdialog.cpp admindialog.cpp managerdialog.cpp ../lib/socket/socket.c ../lib/messages/message.c $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -405,51 +411,56 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp moc_admindialog.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp moc_admindialog.cpp moc_managerdialog.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp moc_admindialog.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp moc_admindialog.cpp moc_managerdialog.cpp
 moc_mainwindow.cpp: mainwindow.h \
 		../client/headers/menu.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
 
 moc_logindialog.cpp: logindialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include logindialog.h -o moc_logindialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include logindialog.h -o moc_logindialog.cpp
 
 moc_registerdialog.cpp: registerdialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include registerdialog.h -o moc_registerdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include registerdialog.h -o moc_registerdialog.cpp
 
 moc_changepassworddialog.cpp: changepassworddialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include changepassworddialog.h -o moc_changepassworddialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include changepassworddialog.h -o moc_changepassworddialog.cpp
 
 moc_browsefilmdialog.cpp: browsefilmdialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include browsefilmdialog.h -o moc_browsefilmdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include browsefilmdialog.h -o moc_browsefilmdialog.cpp
 
 moc_searchfilmdialog.cpp: searchfilmdialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include searchfilmdialog.h -o moc_searchfilmdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include searchfilmdialog.h -o moc_searchfilmdialog.cpp
 
 moc_bookticketdialog.cpp: bookticketdialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include bookticketdialog.h -o moc_bookticketdialog.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include bookticketdialog.h -o moc_bookticketdialog.cpp
 
 moc_admindialog.cpp: admindialog.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include admindialog.h -o moc_admindialog.cpp
+
+moc_managerdialog.cpp: managerdialog.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include managerdialog.h -o moc_managerdialog.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -483,7 +494,8 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		browsefilmdialog.h \
 		searchfilmdialog.h \
 		bookticketdialog.h \
-		admindialog.h
+		admindialog.h \
+		managerdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 logindialog.o: logindialog.cpp logindialog.h \
@@ -528,6 +540,13 @@ admindialog.o: admindialog.cpp admindialog.h \
 		../lib/messages/message.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o admindialog.o admindialog.cpp
 
+managerdialog.o: managerdialog.cpp managerdialog.h \
+		browsefilmdialog.h \
+		../client/headers/menu.h \
+		../lib/socket/socket.h \
+		../lib/messages/message.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o managerdialog.o managerdialog.cpp
+
 socket.o: ../lib/socket/socket.c 
 	$(CC) -c $(CFLAGS) $(INCPATH) -o socket.o ../lib/socket/socket.c
 
@@ -557,6 +576,9 @@ moc_bookticketdialog.o: moc_bookticketdialog.cpp
 
 moc_admindialog.o: moc_admindialog.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_admindialog.o moc_admindialog.cpp
+
+moc_managerdialog.o: moc_managerdialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_managerdialog.o moc_managerdialog.cpp
 
 ####### Install
 
