@@ -139,7 +139,6 @@ void handleChangePassword( int connfd, MYSQL *conn, node *h){
 //         "INSERT INTO films (title, category_id, show_time, description) "
 //         "VALUES ('%s', %s, %s, '%s')",
 //         title, category_id, show_time, description);
-
 //     if (mysql_query(conn, query) != 0) {
 //         sendResult(connfd, ADD_FILM_FAIL);
 //         return;
