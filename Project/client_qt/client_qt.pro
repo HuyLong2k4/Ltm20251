@@ -20,6 +20,7 @@ SOURCES += \
     browsefilmdialog.cpp \
     searchfilmdialog.cpp \
     bookticketdialog.cpp \
+    admindialog.cpp \
     ../lib/socket/socket.c \
     ../lib/messages/message.c
 
@@ -31,6 +32,7 @@ HEADERS += \
     browsefilmdialog.h \
     searchfilmdialog.h \
     bookticketdialog.h \
+    admindialog.h \
     ../lib/socket/socket.h \
     ../lib/messages/message.h \
     ../client/headers/menu.h \

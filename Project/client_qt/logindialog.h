@@ -13,6 +13,7 @@ class LoginDialog : public QDialog
 public:
     explicit LoginDialog(int sockfd, QWidget *parent = nullptr);
     QString getUsername() const { return username; }
+    int getLoginResult() const { return loginResult; }
 
 private slots:
     void onLoginClicked();
@@ -27,6 +28,7 @@ private:
     
     int sockfd;
     QString username;
+    int loginResult;
 };
 
 #endif // LOGINDIALOG_H

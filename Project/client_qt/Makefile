@@ -60,6 +60,7 @@ SOURCES       = main.cpp \
 		browsefilmdialog.cpp \
 		searchfilmdialog.cpp \
 		bookticketdialog.cpp \
+		admindialog.cpp \
 		../lib/socket/socket.c \
 		../lib/messages/message.c moc_mainwindow.cpp \
 		moc_logindialog.cpp \
@@ -67,7 +68,8 @@ SOURCES       = main.cpp \
 		moc_changepassworddialog.cpp \
 		moc_browsefilmdialog.cpp \
 		moc_searchfilmdialog.cpp \
-		moc_bookticketdialog.cpp
+		moc_bookticketdialog.cpp \
+		moc_admindialog.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		logindialog.o \
@@ -76,6 +78,7 @@ OBJECTS       = main.o \
 		browsefilmdialog.o \
 		searchfilmdialog.o \
 		bookticketdialog.o \
+		admindialog.o \
 		socket.o \
 		message.o \
 		moc_mainwindow.o \
@@ -84,7 +87,8 @@ OBJECTS       = main.o \
 		moc_changepassworddialog.o \
 		moc_browsefilmdialog.o \
 		moc_searchfilmdialog.o \
-		moc_bookticketdialog.o
+		moc_bookticketdialog.o \
+		moc_admindialog.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -169,6 +173,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		browsefilmdialog.h \
 		searchfilmdialog.h \
 		bookticketdialog.h \
+		admindialog.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h \
 		../client/headers/menu.h \
@@ -181,6 +186,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		browsefilmdialog.cpp \
 		searchfilmdialog.cpp \
 		bookticketdialog.cpp \
+		admindialog.cpp \
 		../lib/socket/socket.c \
 		../lib/messages/message.c
 QMAKE_TARGET  = client_qt
@@ -366,8 +372,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h logindialog.h registerdialog.h changepassworddialog.h browsefilmdialog.h searchfilmdialog.h bookticketdialog.h ../lib/socket/socket.h ../lib/messages/message.h ../client/headers/menu.h ../lib/users/user.h ../lib/loginedUser.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp logindialog.cpp registerdialog.cpp changepassworddialog.cpp browsefilmdialog.cpp searchfilmdialog.cpp bookticketdialog.cpp ../lib/socket/socket.c ../lib/messages/message.c $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.h logindialog.h registerdialog.h changepassworddialog.h browsefilmdialog.h searchfilmdialog.h bookticketdialog.h admindialog.h ../lib/socket/socket.h ../lib/messages/message.h ../client/headers/menu.h ../lib/users/user.h ../lib/loginedUser.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp logindialog.cpp registerdialog.cpp changepassworddialog.cpp browsefilmdialog.cpp searchfilmdialog.cpp bookticketdialog.cpp admindialog.cpp ../lib/socket/socket.c ../lib/messages/message.c $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -399,9 +405,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp moc_admindialog.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp
+	-$(DEL_FILE) moc_mainwindow.cpp moc_logindialog.cpp moc_registerdialog.cpp moc_changepassworddialog.cpp moc_browsefilmdialog.cpp moc_searchfilmdialog.cpp moc_bookticketdialog.cpp moc_admindialog.cpp
 moc_mainwindow.cpp: mainwindow.h \
 		../client/headers/menu.h \
 		../lib/socket/socket.h \
@@ -440,6 +446,11 @@ moc_bookticketdialog.cpp: bookticketdialog.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include '/home/khanh/project/Network Programming/Ltm20251/Project/client_qt/moc_predefs.h' -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I'/home/khanh/project/Network Programming/Ltm20251/Project/client_qt' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/socket' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/messages' -I'/home/khanh/project/Network Programming/Ltm20251/Project/client/headers' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib/users' -I'/home/khanh/project/Network Programming/Ltm20251/Project/lib' -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include bookticketdialog.h -o moc_bookticketdialog.cpp
 
+moc_admindialog.cpp: admindialog.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/long/Ltm20251/Project/client_qt/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/long/Ltm20251/Project/client_qt -I/home/long/Ltm20251/Project/lib/socket -I/home/long/Ltm20251/Project/lib/messages -I/home/long/Ltm20251/Project/client/headers -I/home/long/Ltm20251/Project/lib/users -I/home/long/Ltm20251/Project/lib -I/usr/include/mysql -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/13 -I/usr/include/x86_64-linux-gnu/c++/13 -I/usr/include/c++/13/backward -I/usr/lib/gcc/x86_64-linux-gnu/13/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include admindialog.h -o moc_admindialog.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
@@ -471,7 +482,8 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		changepassworddialog.h \
 		browsefilmdialog.h \
 		searchfilmdialog.h \
-		bookticketdialog.h
+		bookticketdialog.h \
+		admindialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 logindialog.o: logindialog.cpp logindialog.h \
@@ -510,6 +522,12 @@ bookticketdialog.o: bookticketdialog.cpp bookticketdialog.h \
 		../client/headers/menu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bookticketdialog.o bookticketdialog.cpp
 
+admindialog.o: admindialog.cpp admindialog.h \
+		../client/headers/menu.h \
+		../lib/socket/socket.h \
+		../lib/messages/message.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o admindialog.o admindialog.cpp
+
 socket.o: ../lib/socket/socket.c 
 	$(CC) -c $(CFLAGS) $(INCPATH) -o socket.o ../lib/socket/socket.c
 
@@ -536,6 +554,9 @@ moc_searchfilmdialog.o: moc_searchfilmdialog.cpp
 
 moc_bookticketdialog.o: moc_bookticketdialog.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_bookticketdialog.o moc_bookticketdialog.cpp
+
+moc_admindialog.o: moc_admindialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_admindialog.o moc_admindialog.cpp
 
 ####### Install
 

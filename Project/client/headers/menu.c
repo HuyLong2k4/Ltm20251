@@ -167,4 +167,12 @@ void viewManager(){
     printf("---------------------------------------------------\n");
 }
 
+void viewAdmin(){
+    printf("--------------ADMIN PANEL------------------\n\n");
+    printf("1. Show all users\n");
+    printf("2. Delete user\n");
+    printf("3. Change user role\n");
+    printf("4. Logout\n\n");
+    printf("---------------------------------------------------\n");
+}
 

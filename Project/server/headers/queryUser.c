@@ -5,7 +5,8 @@
 #include "../../lib/users/functionUser.h"
 
 #define LOGIN_SUCCESS_USER "1010"
-#define LOGIN_SUCCESS_ADMIN "1011"
+#define LOGIN_SUCCESS_MANAGER "1011"
+#define LOGIN_SUCCESS_ADMIN "1012"
 #define LOGIN_FAIL "2011"
 #define LOGIN_ALREADY "2101"
 #define LOGOUT_SUCCESS "1102"
@@ -94,19 +95,22 @@ int checkLogin(node head, char **username, char *password, listLoginedAccount *a
     struct Node* p = head;
     while(p != NULL){
         if((strcmp(*username, p->data.username) == 0) && (strcmp(password, p->data.password) == 0)){
-            if(p->data.role_id == 1){
+            if(p->data.role_id == 0){
                 printf("%s\n", LOGIN_SUCCESS_ADMIN);
-                return 1;
+                return 0;  // Admin role
+            }else if(p->data.role_id == 1){
+                printf("%s\n", LOGIN_SUCCESS_MANAGER);
+                return 1;  // Manager role
             }else if(p->data.role_id == 2){
                 printf("%s\n", LOGIN_SUCCESS_USER);
-                return 2;
+                return 2;  // User role
             }            
         }
         p = p->next;
     }
 
     printf("%s\n", LOGIN_FAIL);
-    return 0;
+    return -1;  // Login failed
 }
 
 int registerUser(MYSQL *connection, user newUser) {

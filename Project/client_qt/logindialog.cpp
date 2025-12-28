@@ -11,7 +11,7 @@ extern "C" {
 }
 
 LoginDialog::LoginDialog(int sockfd, QWidget *parent)
-    : QDialog(parent), sockfd(sockfd)
+    : QDialog(parent), sockfd(sockfd), loginResult(-1)
 {
     setWindowTitle("Login");
     setModal(true);
@@ -73,8 +73,9 @@ void LoginDialog::onLoginClicked()
     
     // Receive response
     int result = recvResult(sockfd);
+    loginResult = result;
     
-    if (result == LOGIN_SUCCESS_USER || result == LOGIN_SUCCESS_ADMIN) {
+    if (result == LOGIN_SUCCESS_USER || result == LOGIN_SUCCESS_MANAGER || result == LOGIN_SUCCESS_ADMIN) {
         username = user;
         accept();
     } else if (result == LOGIN_FAIL) {

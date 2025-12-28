@@ -49,6 +49,15 @@ void handleBrowseFilm(int sockfd);
 
 /*----------END BROWSE FILM--------*/
 
+/*----------ADMIN MANAGEMENT--------*/
+
+void handleShowAllUsers(int sockfd);
+void handleDeleteUser(int sockfd);
+void handleChangeUserRole(int sockfd);
+void handleRequestAdmin(int sockfd, char *username, char *message);
+
+/*----------END ADMIN MANAGEMENT--------*/
+
 
 
 
@@ -473,7 +482,6 @@ void handleBrowseFilm(int sockfd){
 
 // }
 
-
 /*----------MANAGER--------*/
 void handleRequestManager(int sockfd, char *username, char *message) {
     int manager_choice = 0;
@@ -498,6 +506,103 @@ void handleRequestManager(int sockfd, char *username, char *message) {
             case 5: {
                 handleLogout(sockfd, message);
                 manager_choice = 0;
+/*----------ADMIN MANAGEMENT--------*/
+
+void handleShowAllUsers(int sockfd){
+    char message[2048];
+    
+    printf("\n=== ALL USERS ===\n");
+    
+    memset(message, 0, sizeof(message));
+    sprintf(message, "SHOW_ALL_USERS\r\n");
+    sendMessage(sockfd, message);
+    
+    int result = recvResult(sockfd);
+    if(result == SHOW_ALL_USERS_SUCCESS){
+        printf("%-5s %-20s %-20s %-10s\n", "ID", "Name", "Username", "Role");
+        printf("---------------------------------------------------------------\n");
+        while(1){
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if(strcmp(message, "END") == 0) break;
+            printf("%s\n", message);
+        }
+    } else {
+        printf("\nFailed to retrieve user list!\n");
+    }
+}
+
+void handleDeleteUser(int sockfd){
+    char user_id[255];
+    char message[1024];
+    
+    printf("\n=== DELETE USER ===\n");
+    printf("Enter user ID to delete: ");
+    fgets(user_id, sizeof(user_id), stdin);
+    user_id[strcspn(user_id, "\n")] = 0;
+    
+    memset(message, 0, sizeof(message));
+    sprintf(message, "DELETE_USER\r\n%s\r\n", user_id);
+    sendMessage(sockfd, message);
+    
+    int result = recvResult(sockfd);
+    if(result == DELETE_USER_SUCCESS){
+        printf("\nUser deleted successfully!\n");
+    } else {
+        printf("\nFailed to delete user!\n");
+    }
+}
+
+void handleChangeUserRole(int sockfd){
+    char user_id[255];
+    char new_role[255];
+    char message[1024];
+    
+    printf("\n=== CHANGE USER ROLE ===\n");
+    printf("Enter user ID: ");
+    fgets(user_id, sizeof(user_id), stdin);
+    user_id[strcspn(user_id, "\n")] = 0;
+    
+    printf("Enter new role (0=Admin, 1=Manager, 2=User): ");
+    fgets(new_role, sizeof(new_role), stdin);
+    new_role[strcspn(new_role, "\n")] = 0;
+    
+    memset(message, 0, sizeof(message));
+    sprintf(message, "CHANGE_USER_ROLE\r\n%s\r\n%s\r\n", user_id, new_role);
+    sendMessage(sockfd, message);
+    
+    int result = recvResult(sockfd);
+    if(result == UPDATE_USER_ROLE_SUCCESS){
+        printf("\nUser role updated successfully!\n");
+    } else {
+        printf("\nFailed to update user role!\n");
+    }
+}
+
+void handleRequestAdmin(int sockfd, char *username, char *message){
+    int admin_choice;
+    do {
+        viewAdmin();
+        printf("Choice: ");
+        scanf("%d", &admin_choice);
+        clearKeyboardBuffer();
+        
+        switch(admin_choice){
+            case 1: {
+                handleShowAllUsers(sockfd);
+                break;
+            }
+            case 2: {
+                handleDeleteUser(sockfd);
+                break;
+            }
+            case 3: {
+                handleChangeUserRole(sockfd);
+                break;
+            }
+            case 4: {
+                handleLogout(sockfd, message);
+                admin_choice = 0;
                 break;
             }
             default: {
@@ -570,4 +675,3 @@ void handleAddFilm(int sockfd) {
 }
 /*-----END ADD FILM-----*/
 
-/*----------END MANAGER----------*/

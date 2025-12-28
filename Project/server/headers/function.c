@@ -8,7 +8,8 @@
 
 
 #define LOGIN_SUCCESS_USER 1010
-#define LOGIN_SUCCESS_ADMIN 1011
+#define LOGIN_SUCCESS_MANAGER 1011
+#define LOGIN_SUCCESS_ADMIN 1012
 #define LOGIN_FAIL 2011
 #define LOGIN_ALREADY 2012
 #define LOGOUT_SUCCESS 1030
@@ -35,6 +36,12 @@
 #define BOOK_TICKET_FAIL 2200
 #define CHANGE_PASSWORD_SUCCESS 1110
 #define CHANGE_PASSWORD_FAIL 2110
+#define SHOW_ALL_USERS_SUCCESS 1300
+#define SHOW_ALL_USERS_FAIL 2300
+#define DELETE_USER_SUCCESS 1301
+#define DELETE_USER_FAIL 2301
+#define UPDATE_USER_ROLE_SUCCESS 1302
+#define UPDATE_USER_ROLE_FAIL 2302
 
 // void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h);
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password);
@@ -61,18 +68,27 @@ void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, c
     int check = checkLogin(*h, &username, password, arr);
     printf("Login check result: %d\n", check);
 
-    if (check == 0) {
+    if (check == -1) {
+        // Login failed - wrong username/password
         sendResult(connfd, LOGIN_FAIL);
     }
-    else if (check == 1) {
+    else if (check == 0) {
+        // Admin role (role_id = 0)
         addToListLoginedAccount(arr, &username);
         sendResult(connfd, LOGIN_SUCCESS_ADMIN);
     }
+    else if (check == 1) {
+        // Manager role (role_id = 1)
+        addToListLoginedAccount(arr, &username);
+        sendResult(connfd, LOGIN_SUCCESS_MANAGER);
+    }
     else if (check == 2) {
+        // User role (role_id = 2)
         addToListLoginedAccount(arr, &username);
         sendResult(connfd, LOGIN_SUCCESS_USER);
     }
-    else {
+    else if (check == 3) {
+        // Already logged in
         sendResult(connfd, LOGIN_ALREADY);
     }
 }
@@ -606,8 +622,6 @@ void handleBookTicket(
 
 /*----------END BOOK TICKET--------*/
 
-
-
 /*-----ADD FILM-----*/
 void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time) {
     char query[2048];
@@ -658,3 +672,130 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
 }
 
 /*-----END ADD FILM-----*/
+/*----------ADMIN MANAGEMENT--------*/
+
+void handleShowAllUsers(MYSQL *conn, int connfd) {
+    char query[512];
+    char message[1024];
+    
+    sprintf(query, "SELECT id, name, username, role_id FROM users ORDER BY id");
+    
+    if(mysql_query(conn, query) != 0){
+        printf("[DEBUG] Query failed: %s\n", mysql_error(conn));
+        sendResult(connfd, SHOW_ALL_USERS_FAIL);
+        sendMessage(connfd, "END");
+        return;
+    }
+    
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        printf("[DEBUG] No results or empty result set\n");
+        sendResult(connfd, SHOW_ALL_USERS_FAIL);
+        sendMessage(connfd, "END");
+        if(res) mysql_free_result(res);
+        return;
+    }
+    
+    int row_count = mysql_num_rows(res);
+    printf("[DEBUG] Found %d users, sending result code %d\n", row_count, SHOW_ALL_USERS_SUCCESS);
+    sendResult(connfd, SHOW_ALL_USERS_SUCCESS);
+    
+    MYSQL_ROW row;
+    int i = 0;
+    while((row = mysql_fetch_row(res))){
+        const char* role_name;
+        int role_id = atoi(row[3]);
+        
+        switch(role_id) {
+            case 0: role_name = "Admin"; break;
+            case 1: role_name = "Manager"; break;
+            case 2: role_name = "User"; break;
+            default: role_name = "Unknown";
+        }
+        
+        snprintf(message, sizeof(message), "%s|%s|%s|%s", 
+                 row[0], row[1], row[2], role_name);
+        printf("[DEBUG] Sending user %d: %s\n", ++i, message);
+        sendMessage(connfd, message);
+    }
+    
+    printf("[DEBUG] Sending END marker\n");
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+void handleDeleteUser(MYSQL *conn, int connfd) {
+    char *user_id_str = strtok(NULL, "\r\n");
+    printf("[DEBUG] Delete user - user_id_str: %s\n", user_id_str ? user_id_str : "NULL");
+    
+    if(!user_id_str) {
+        printf("[DEBUG] Missing user_id parameter\n");
+        sendResult(connfd, DELETE_USER_FAIL);
+        return;
+    }
+    
+    int user_id = atoi(user_id_str);
+    char query[512];
+    
+    // Check if user exists
+    sprintf(query, "SELECT id FROM users WHERE id = %d", user_id);
+    if(mysql_query(conn, query) != 0){
+        sendResult(connfd, DELETE_USER_FAIL);
+        return;
+    }
+    
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendResult(connfd, DELETE_USER_FAIL);
+        if(res) mysql_free_result(res);
+        return;
+    }
+    mysql_free_result(res);
+    
+    // Delete user
+    sprintf(query, "DELETE FROM users WHERE id = %d", user_id);
+    if(mysql_query(conn, query) == 0){
+        sendResult(connfd, DELETE_USER_SUCCESS);
+    } else {
+        sendResult(connfd, DELETE_USER_FAIL);
+    }
+}
+
+void handleChangeUserRole(MYSQL *conn, int connfd) {
+    char *user_id_str = strtok(NULL, "\r\n");
+    char *new_role_str = strtok(NULL, "\r\n");
+    
+    printf("[DEBUG] Change role - user_id_str: %s, new_role_str: %s\n", 
+           user_id_str ? user_id_str : "NULL", 
+           new_role_str ? new_role_str : "NULL");
+    
+    if(!user_id_str || !new_role_str) {
+        printf("[DEBUG] Missing parameters\n");
+        sendResult(connfd, UPDATE_USER_ROLE_FAIL);
+        return;
+    }
+    
+    int user_id = atoi(user_id_str);
+    int new_role = atoi(new_role_str);
+    
+    printf("[DEBUG] Parsed - user_id: %d, new_role: %d\n", user_id, new_role);
+    
+    // Validate role
+    if(new_role < 0 || new_role > 2) {
+        printf("[DEBUG] Invalid role: %d\n", new_role);
+        sendResult(connfd, UPDATE_USER_ROLE_FAIL);
+        return;
+    }
+    
+    char query[512];
+    sprintf(query, "UPDATE users SET role_id = %d WHERE id = %d", new_role, user_id);
+    
+    printf("[DEBUG] Executing query: %s\n", query);
+    if(mysql_query(conn, query) == 0 && mysql_affected_rows(conn) > 0){
+        printf("[DEBUG] Update successful, affected rows: %llu\n", mysql_affected_rows(conn));
+        sendResult(connfd, UPDATE_USER_ROLE_SUCCESS);
+    } else {
+        printf("[DEBUG] Update failed: %s\n", mysql_error(conn));
+        sendResult(connfd, UPDATE_USER_ROLE_FAIL);
+    }
+}

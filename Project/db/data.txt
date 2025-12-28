@@ -1,8 +1,9 @@
--- Users (role_id: 1=admin, 2=user)
+-- Users (role_id: 1=manager, 2=user, 0=admin)
 INSERT INTO users (name, username, password, role_id) VALUES
-('Nguyen Van A', 'admin', 'admin123', 1),
+('Nguyen Van A', 'manager', 'manager123', 1),
 ('Tran Thi B', 'user1', 'pass123', 2),
 ('Le Van C', 'user2', 'pass456', 2),
+('Mai Huy Long, 'admin', '123456', 1),
 ('Pham Thi D', 'user3', 'pass789', 2);
 
 -- Cinemas

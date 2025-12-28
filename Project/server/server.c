@@ -11,13 +11,15 @@
 #include "../lib/messages/message.h"
 #include "headers/function.h"
 #include "headers/queryUser.h"
+#include "headers/logger.h"
 #include "../db/connect.h"
 
 #define BACKLOG 20
 
 // Đảm bảo các define này khớp với menu.h ở Client
 #define LOGIN_SUCCESS_USER 1010
-#define LOGIN_SUCCESS_ADMIN 1011
+#define LOGIN_SUCCESS_MANAGER 1011
+#define LOGIN_SUCCESS_ADMIN 1012
 #define LOGIN_FAIL 2011
 #define REGISTER_SUCCESS 1020
 #define REGISTER_FAIL 2021
@@ -59,6 +61,9 @@ int main(int argc, char **argv){
         exit(1);
     }
     printf("Connected to database successfully\n");
+    
+    // Khởi tạo logger
+    initLogger();
     
     // Khởi tạo lists
     arr = createListLoginedAccount(); 
@@ -149,6 +154,11 @@ void *handleCommunicate(void* arg) {
         // Giả sử hàm recvMessage trả về số byte nhận được hoặc <=0 nếu ngắt kết nối
         // Cần kiểm tra kỹ hàm recvMessage của bạn
         recvMessage(connfd, message); 
+        
+        // Log message nhận được
+        if (strlen(message) > 0) {
+            logMessage(connfd, "RECV", message);
+        }
         
         // Nếu message rỗng hoặc client đóng kết nối
         if (strlen(message) == 0) {
@@ -264,8 +274,17 @@ void *handleCommunicate(void* arg) {
                 printf("[DEBUG] ADD_FILM params - title: %s, category_id: %s, show_time: %s\n", title, category_id, show_time);
                 handleAddFilm(conn, connfd, title, category_id, show_time);
             }
-        }
-        else {
+        /* ========== ADMIN MANAGEMENT ========== */
+        } else if(strcmp(cmd, "SHOW_ALL_USERS") == 0){
+            handleShowAllUsers(conn, connfd);
+            
+        } else if(strcmp(cmd, "DELETE_USER") == 0){
+            handleDeleteUser(conn, connfd);
+            
+        } else if(strcmp(cmd, "CHANGE_USER_ROLE") == 0){
+            handleChangeUserRole(conn, connfd);
+            
+        } else {
             printf("[ERROR] Unknown command from fd %d: %s\n", connfd, cmd);
             sendMessage(connfd, "ERROR: Unknown command."); 
         }

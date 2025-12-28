@@ -19,6 +19,7 @@ class ChangePasswordDialog;
 class BrowseFilmDialog;
 class SearchFilmDialog;
 class BookTicketDialog;
+class AdminDialog;
 
 class MainWindow : public QMainWindow
 {

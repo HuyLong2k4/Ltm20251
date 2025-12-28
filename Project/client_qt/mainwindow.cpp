@@ -5,6 +5,7 @@
 #include "browsefilmdialog.h"
 #include "searchfilmdialog.h"
 #include "bookticketdialog.h"
+#include "admindialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -136,8 +137,21 @@ void MainWindow::onLoginClicked()
     LoginDialog dialog(sockfd, this);
     if (dialog.exec() == QDialog::Accepted) {
         QString username = dialog.getUsername();
+        int loginResult = dialog.getLoginResult();
         setUsername(username);
-        showUserScreen();
+        
+        if (loginResult == LOGIN_SUCCESS_ADMIN) {
+            // Show admin dialog
+            AdminDialog adminDialog(sockfd, username, this);
+            adminDialog.exec();
+            
+            // After admin dialog closes, return to welcome screen
+            statusLabel->setText("");
+            showWelcomeScreen();
+        } else if (loginResult == LOGIN_SUCCESS_USER || loginResult == LOGIN_SUCCESS_MANAGER) {
+            // Show normal user screen
+            showUserScreen();
+        }
     }
 }
 
