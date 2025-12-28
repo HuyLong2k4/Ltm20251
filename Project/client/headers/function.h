@@ -9,6 +9,7 @@ void clearKeyboardBuffer();
 void handleLogin(int sockfd, char *username, char *password, char *message, int *login_status);
 void handleRegister(int sockfd, char *message);
 void handleRequestUser(int sockfd, char *username, char *message);
+void handleRequestAdmin(int sockfd, char *username, char *message);
 void handleLogout(int sockfd, char *message);
 void handleChangePassword(int sockfd, char *username, char *message);
 

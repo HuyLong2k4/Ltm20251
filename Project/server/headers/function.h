@@ -32,5 +32,8 @@ void handleBrowseCategory(MYSQL *conn, int connfd, char *category_id);
 void handleBrowseCinema(MYSQL *conn, int connfd, char *cinema_id);
 void handleBrowseShowTime(MYSQL *conn, int connfd, char *premiered_time_id);
 
+void handleShowAllUsers(MYSQL *conn, int connfd);
+void handleDeleteUser(MYSQL *conn, int connfd);
+void handleChangeUserRole(MYSQL *conn, int connfd);
 
 #endif
