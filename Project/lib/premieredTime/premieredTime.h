@@ -1,14 +1,12 @@
-struct PremieredTimeFilm{
+struct PremieredTime{
     unsigned long id;
-    unsigned long film_id;
-    unsigned long premiered_time_id;
-    unsigned long cinema_id;
-    char date[255];
+    char start_time[255];
+    char finish_time[255];
 };
-typedef struct PremieredTimeFilm premieredTimeFilm;
+typedef struct PremieredTime premieredTime;
 
-struct NodePremieredTimeFilm{
-	premieredTimeFilm data;
-	struct NodePremieredTimeFilm *next;
+struct NodePremieredTime{
+	premieredTime data;
+	struct NodePremieredTime *next;
 };
-typedef struct NodePremieredTimeFilm* nodePremieredTimeFilm;
+typedef struct NodePremieredTime* nodePremieredTime;

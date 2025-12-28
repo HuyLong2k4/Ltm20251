@@ -493,36 +493,36 @@ void handleBrowseFilm(int sockfd){
 
 /*----------END BROWSE FILM--------*/
 
-void handleRequestManager(int sockfd, char *username, char *message) {
-    int manager_choice;
-    do {
-        viewAdmin();
-        printf("Choice: ");
-        scanf("%d", &manager_choice);
-        clearKeyboardBuffer();
-        switch (manager_choice){
-            case 1: {
-                // handleAddNewFilm(sockfd);
-                break;
-            }
-            case 2: {
-                handleAnnouncingFilm(sockfd);
-                break;
-            }
-            case 3: {
-                handleEditAnnouncingFilm();
-                break;
-            }
-            case 4: {
-                handleLogout(sockfd, message);
-                manager_choice = 0;
-                break;
-            }
-        }
-    } while (!manager_choice != 0);
-}
+// void handleRequestManager(int sockfd, char *username, char *message) {
+//     int manager_choice;
+//     do {
+//         viewAdmin();
+//         printf("Choice: ");
+//         scanf("%d", &manager_choice);
+//         clearKeyboardBuffer();
+//         switch (manager_choice){
+//             case 1: {
+//                 // handleAddNewFilm(sockfd);
+//                 break;
+//             }
+//             case 2: {
+//                 // handleAnnouncingFilm(sockfd);
+//                 break;
+//             }
+//             case 3: {
+//                 // handleEditAnnouncingFilm();
+//                 break;
+//             }
+//             case 4: {
+//                 handleLogout(sockfd, message);
+//                 manager_choice = 0;
+//                 break;
+//             }
+//         }
+//     } while (!manager_choice != 0);
+// }
 
-void handleAnnouncingFilm(int sockfd) {
+// void handleAnnouncingFilm(int sockfd) {
 
-}
+// }
 

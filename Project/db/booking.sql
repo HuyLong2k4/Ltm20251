@@ -15,14 +15,20 @@ CREATE TABLE cinemas (
     address varchar(255) NOT NULL
 );
 
-
 CREATE TABLE rooms (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    cinema_id BIGINT UNSIGNED NOT NULL,
-    total_seats INT NOT NULL,
-    status ENUM('ACTIVE','INACTIVE') DEFAULT 'ACTIVE',
+    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name varchar(255) NOT NULL,
+    quantity_seats bigint(20) NOT NULL,
+    cinema_id bigint(20) UNSIGNED NOT NULL,
+    status bigint(20) NOT NULL,
     FOREIGN KEY (cinema_id) REFERENCES cinemas(id)
+);
+
+CREATE TABLE seats (
+    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    room_id bigint(20) UNSIGNED NOT NULL,
+    status bigint(20) NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES rooms(id)
 );
 
 CREATE TABLE categories (
@@ -38,39 +44,29 @@ CREATE TABLE films (
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
-CREATE TABLE seats (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    room_id BIGINT UNSIGNED NOT NULL,
-    seat_number VARCHAR(10) NOT NULL,
-    row_name VARCHAR(5) NOT NULL,
-    FOREIGN KEY (room_id) REFERENCES rooms(id),
-    UNIQUE (room_id, seat_number)
+CREATE TABLE premiered_time (
+    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    start_time varchar(255) NOT NULL,
+    finish_time varchar(255) NOT NULL
 );
 
-CREATE TABLE showtimes (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    film_id BIGINT UNSIGNED NOT NULL,
-    room_id BIGINT UNSIGNED NOT NULL,
-    start_time DATETIME NOT NULL,
-    end_time DATETIME NOT NULL,
-
+CREATE TABLE premiered_time_film (
+    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    film_id bigint(20) UNSIGNED NOT NULL,
+    premiered_time_id bigint(20) UNSIGNED NOT NULL,
+    cinema_id bigint(20) UNSIGNED NOT NULL,
     FOREIGN KEY (film_id) REFERENCES films(id),
-    FOREIGN KEY (room_id) REFERENCES rooms(id),
-
-    UNIQUE (room_id, start_time)
+    FOREIGN KEY (premiered_time_id) REFERENCES premiered_time(id),
+    FOREIGN KEY (cinema_id) REFERENCES cinemas(id)
 );
-
 
 CREATE TABLE tickets (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT UNSIGNED NOT NULL,
-    showtime_id BIGINT UNSIGNED NOT NULL,
-    seat_id BIGINT UNSIGNED NOT NULL,
-    booked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-
+    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id bigint(20) UNSIGNED NOT NULL,
+    premiered_time_film_id bigint(20) UNSIGNED NOT NULL,
+    seat_id bigint(20) UNSIGNED NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (showtime_id) REFERENCES showtimes(id),
-    FOREIGN KEY (seat_id) REFERENCES seats(id),
-
-    UNIQUE (showtime_id, seat_id)
+    FOREIGN KEY (premiered_time_film_id) REFERENCES premiered_time_film(id),
+    FOREIGN KEY (seat_id) REFERENCES seats(id)
 );
+
