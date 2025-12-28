@@ -490,7 +490,7 @@ void handleBrowseFollowCategory(int sockfd){
     category_id[strcspn(category_id, "\n")] = 0;
 
     memset(message, 0, sizeof(message));
-    sprintf(message, "BROWSE_BY_CATEGORY\r\n%s\r\n", category_id);
+    makeBrowseFollowCategoryMessage(category_id, message);
     sendMessage(sockfd, message);
 
     int result = recvResult(sockfd);
@@ -531,7 +531,7 @@ void handleBrowseFollowCinema(int sockfd){
     cinema_id[strcspn(cinema_id, "\n")] = 0;
 
     memset(message, 0, sizeof(message));
-    sprintf(message, "BROWSE_BY_CINEMA\r\n%s\r\n", cinema_id);
+    makeBrowseFollowCinemaMessage(cinema_id, message);
     sendMessage(sockfd, message);
 
     int result = recvResult(sockfd);
@@ -568,12 +568,12 @@ void handleBrowseFollowShowTime(int sockfd){
         printf("%s\n", message);
     }
 
-    printf("Enter showtime (HH:MM, e.g., 09:00): ");
+    printf("Enter showtime ID: ");
     fgets(time_slot, sizeof(time_slot), stdin);
     time_slot[strcspn(time_slot, "\n")] = 0;
 
     memset(message, 0, sizeof(message));
-    sprintf(message, "BROWSE_BY_TIME\r\n%s\r\n", time_slot);
+    makeBrowseFollowPremieredTimeMessage(time_slot, message);
     sendMessage(sockfd, message);
 
     int result = recvResult(sockfd);

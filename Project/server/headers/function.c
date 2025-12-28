@@ -4,14 +4,7 @@
 #include "../../lib/socket/socket.h"
 #include "../../lib/messages/message.h"
 #include "queryUser.h"
-#include "queryPremieredTime.h"
-#include "queryPremieredTimeFilm.h"
-#include "queryFilm.h"
-#include "queryCategory.h"
 #include "function.h"
-#include "queryCinema.h"
-#include "queryPremieredTime.h"
-#include "queryPremieredTimeFilm.h"
 
 
 #define LOGIN_SUCCESS_USER 1010
@@ -38,8 +31,8 @@
 #define VIEW_CHAIR_FAIL 2081
 #define CHOOSE_CHAIR_SUCCESS 1090
 #define CHOOSE_CHAIR_FAIL 2091
-#define BOOK_TICKET_SUCCESS 1100
-#define BOOK_TICKET_FAIL 2101
+#define BOOK_TICKET_SUCCESS 1200
+#define BOOK_TICKET_FAIL 2200
 #define CHANGE_PASSWORD_SUCCESS 1110
 #define CHANGE_PASSWORD_FAIL 2110
 
@@ -534,7 +527,7 @@ void handleShowTimeByFilmCinema(MYSQL *conn, int connfd) {
  */
 void handleShowSeat(MYSQL *conn, int connfd) {
     char showtime_id[255] = {0};
-    char query[512];
+    char query[1024];
     char message[2048];
 
     char *tmp = strtok(NULL, "\r\n");
@@ -569,7 +562,6 @@ void handleShowSeat(MYSQL *conn, int connfd) {
 
     strcpy(message, "=== Available Seats ===\n");
     MYSQL_ROW row;
-    int count = 0;
     while((row = mysql_fetch_row(res))){
         char line[128];
         snprintf(line, sizeof(line), "SEAT|%s|%s%s", row[0], row[1], row[2]);
@@ -581,15 +573,36 @@ void handleShowSeat(MYSQL *conn, int connfd) {
     mysql_free_result(res);
 }
 
-//         newPremieredTimeFilm.film_id = film_id_search;
-//         newPremieredTimeFilm.cinema_id = cinema_id_search;
-//         newPremieredTimeFilm.premiered_time_id = premiered_time_search;
-//         strcpy(newPremieredTimeFilm.date, date);
+void handleBookTicket(
+    MYSQL *conn,
+    int connfd,
+    char *username,
+    char *showtime_id,
+    char *seat_id
+) {
+    int user_id = getUserIdByUsername(conn, username);
+    char query[512];
 
-//         addNodePremieredTimeFilm(&ptf, newPremieredTimeFilm);
 
-//         addPremieredTimeFilm(conn, newPremieredTimeFilm);
+    mysql_query(conn, "START TRANSACTION");
 
-//         sendResult(connfd, POST_FILM_SUCCESS);
-//     }
-// }
+
+    sprintf(query,
+        "INSERT INTO tickets(user_id, showtime_id, seat_id) "
+        "VALUES(%d, %s, %s)",
+        user_id, showtime_id, seat_id
+    );
+
+
+    if (mysql_query(conn, query) == 0) {
+        mysql_query(conn, "COMMIT");
+        sendResult(connfd, BOOK_TICKET_SUCCESS);
+    } else {
+        mysql_query(conn, "ROLLBACK");
+        sendResult(connfd, BOOK_TICKET_FAIL);
+    }
+}
+
+
+/*----------END BOOK TICKET--------*/
+
