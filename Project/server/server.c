@@ -120,7 +120,7 @@ int main(int argc, char **argv){
     return 0;
 }
 
-void *handleCommunicate(void* arg){
+void *handleCommunicate(void* arg) {
     int connfd = *((int*) arg);
     free(arg);
     pthread_detach(pthread_self());
@@ -255,7 +255,17 @@ void *handleCommunicate(void* arg){
             if(title) {
                 handleSearchFilmByTitle(conn, connfd, title);
             }
-        } else {
+        /* ========== ADD FILM ========== */
+        } else if(strcmp(cmd, "ADD_FILM") == 0) {
+            char *title = strtok(NULL, "\r\n");
+            char *category_id = strtok(NULL, "\r\n");
+            char *show_time = strtok(NULL, "\r\n");
+            if(title && category_id && show_time) {
+                printf("[DEBUG] ADD_FILM params - title: %s, category_id: %s, show_time: %s\n", title, category_id, show_time);
+                handleAddFilm(conn, connfd, title, category_id, show_time);
+            }
+        }
+        else {
             printf("[ERROR] Unknown command from fd %d: %s\n", connfd, cmd);
             sendMessage(connfd, "ERROR: Unknown command."); 
         }

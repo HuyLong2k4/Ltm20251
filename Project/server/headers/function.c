@@ -36,26 +36,26 @@
 #define CHANGE_PASSWORD_SUCCESS 1110
 #define CHANGE_PASSWORD_FAIL 2110
 
-void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h);
+// void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h);
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password);
 void handleLogout( int connfd, listLoginedAccount *arr, char *username);
 void handleRegister( MYSQL *conn, int connfd, node *h);
 void handleChangePassword( int connfd, MYSQL *conn, node *h);
 
-void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h){
-    if (strcmp(type, "LOGIN") == 0) {
-        handleLogin(connfd, arr, h, username, password);
-    }
-    else if (strcmp(type, "LOGOUT") == 0) {
-        handleLogout(connfd, arr, username);
-    }
-    else if (strcmp(type, "REGISTER") == 0) {
-        handleRegister(conn, connfd, h);
-    }
-    else if (strcmp(type, "CHANGE_PASSWORD") == 0) {
-        handleChangePassword(connfd, conn, h);
-    }
-}
+// void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h){
+//     if (strcmp(type, "LOGIN") == 0) {
+//         handleLogin(connfd, arr, h, username, password);
+//     }
+//     else if (strcmp(type, "LOGOUT") == 0) {
+//         handleLogout(connfd, arr, username);
+//     }
+//     else if (strcmp(type, "REGISTER") == 0) {
+//         handleRegister(conn, connfd, h);
+//     }
+//     else if (strcmp(type, "CHANGE_PASSWORD") == 0) {
+//         handleChangePassword(connfd, conn, h);
+//     }
+// }
 
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password){
     int check = checkLogin(*h, &username, password, arr);
@@ -606,3 +606,55 @@ void handleBookTicket(
 
 /*----------END BOOK TICKET--------*/
 
+
+
+/*-----ADD FILM-----*/
+void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time) {
+    char query[2048];
+    char response[512];
+
+    sprintf(query, 
+        "SELECT COUNT(*) FROM films WHERE LOWER(title) = LOWER('%s')", title);
+    
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        MYSQL_ROW row = mysql_fetch_row(result);
+        if (row && atoi(row[0]) > 0) {
+            mysql_free_result(result);
+            sprintf(response, "Film '%s' already exists.", title);
+            sendMessage(connfd, response);
+            return;
+        }
+        mysql_free_result(result);
+    }
+    // 2. Check category_id exists
+    sprintf(query, 
+        "SELECT COUNT(*) FROM categories WHERE id = %s", category_id);
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        MYSQL_ROW row = mysql_fetch_row(result);
+        if (row && atoi(row[0]) == 0) {
+            mysql_free_result(result);
+            sprintf(response, "Category ID '%s' does not exist.", category_id);
+            sendMessage(connfd, response);
+            return;
+        }
+        mysql_free_result(result);
+    }
+
+    // 4. Insert new film
+    sprintf(query, 
+        "INSERT INTO films (title, category_id, show_time) VALUES ('%s', %s, '%s')", title, category_id, show_time);
+    if (mysql_query(conn, query) == 0) {
+        int film_id = mysql_insert_id(conn);
+        sprintf(response, "Film '%s' added successfully with ID %d.", title, film_id);
+        sendMessage(connfd, response);
+        printf("[LOG] Added film: %s (ID: %d)\n", title, film_id);
+    } else {
+        sprintf(response, "Failed to add film '%s'", title);
+        sendMessage(connfd, response);
+        printf("[ERROR] Failed to add film: %s\n", title);
+    }
+}
+
+/*-----END ADD FILM-----*/

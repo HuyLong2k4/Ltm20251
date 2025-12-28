@@ -35,7 +35,7 @@ void handleSearchByTitle(int sockfd);
 
 /*----------ADD FILM--------*/
 
-void handleAddNewFilm(int sockfd);
+void handleAddFilm(int sockfd);
 
 /*----------END ADD FILM--------*/
 
@@ -121,7 +121,7 @@ void handleLogout(int sockfd, char *message){
     makeLogoutMessage(message);
     sendMessage(sockfd, message);
     int result = recvResult(sockfd);
-    printf("%d\n", result);
+    // printf("%d\n", result);
     printf(LOGOUT_SUCCESS_MESSAGE);
 }
 
@@ -132,129 +132,13 @@ void handleChangePassword(int sockfd, char *username, char *message){
     sendMessage(sockfd, message);
 
     int result = recvResult(sockfd);
-    printf("%d\n", result);
+    // printf("%d\n", result);
     if (result == CHANGE_PASSWORD_SUCCESS) {
         printf(CHANGE_PASSWORD_SUCCESS_MESSAGE);
     } else {
         printf(CHANGE_PASSWORD_FAIL_MESSAGE);
     }
 }
-
-
-/*----------ADD FILM----------*/
-
-// void handleAddFilmWithShowtime(int sockfd){
-//     char title[255];
-//     char category_id[20];
-//     char show_time[20];      // duration in minutes
-//     char room_id[20];
-//     char start_datetime[50]; // YYYY-MM-DD HH:MM:SS
-//     char message[4096];
-
-//     printf("\n=== ADD NEW FILM WITH SHOWTIME ===\n");
-    
-//     // 1. Show categories
-//     memset(message, 0, sizeof(message));
-//     sprintf(message, "SHOW_CATEGORIES\r\n");
-//     sendMessage(sockfd, message);
-    
-//     printf("\nAvailable Categories:\n");
-//     while(1){
-//         memset(message, 0, sizeof(message));
-//         recvMessage(sockfd, message);
-//         if(strcmp(message, "END") == 0) break;
-//         printf("%s\n", message);
-//     }
-    
-//     // 2. Input film info
-//     printf("\n--- FILM INFORMATION ---\n");
-//     printf("Enter film title: ");
-//     fgets(title, sizeof(title), stdin);
-//     title[strcspn(title, "\n")] = 0;
-    
-//     printf("Enter category ID: ");
-//     fgets(category_id, sizeof(category_id), stdin);
-//     category_id[strcspn(category_id, "\n")] = 0;
-    
-//     printf("Enter duration (minutes): ");
-//     fgets(show_time, sizeof(show_time), stdin);
-//     show_time[strcspn(show_time, "\n")] = 0;
-    
-//     // 3. Show available rooms
-//     memset(message, 0, sizeof(message));
-//     sprintf(message, "SHOW_ROOMS\r\n");
-//     sendMessage(sockfd, message);
-    
-//     printf("\n--- SHOWTIME INFORMATION ---\n");
-//     printf("Available Rooms:\n");
-//     while(1){
-//         memset(message, 0, sizeof(message));
-//         recvMessage(sockfd, message);
-//         if(strcmp(message, "END") == 0) break;
-//         printf("%s\n", message);
-//     }
-    
-//     printf("\nEnter room ID: ");
-//     fgets(room_id, sizeof(room_id), stdin);
-//     room_id[strcspn(room_id, "\n")] = 0;
-    
-//     // 4. Show current schedule for selected room
-//     printf("\nCurrent schedule for this room:\n");
-//     memset(message, 0, sizeof(message));
-//     sprintf(message, "SHOW_ROOM_SCHEDULE\r\n%s\r\n", room_id);
-//     sendMessage(sockfd, message);
-    
-//     while(1){
-//         memset(message, 0, sizeof(message));
-//         recvMessage(sockfd, message);
-//         if(strcmp(message, "END") == 0) break;
-//         printf("%s\n", message);
-//     }
-    
-//     printf("\nEnter start time (YYYY-MM-DD HH:MM:SS): ");
-//     printf("\nExample: 2025-01-20 14:30:00\n> ");
-//     fgets(start_datetime, sizeof(start_datetime), stdin);
-//     start_datetime[strcspn(start_datetime, "\n")] = 0;
-    
-//     // 5. Send all data to server
-//     memset(message, 0, sizeof(message));
-//     sprintf(message, "ADD_FILM_SHOWTIME\r\n%s\r\n%s\r\n%s\r\n%s\r\n%s\r\n", 
-//             title, category_id, show_time, room_id, start_datetime);
-//     sendMessage(sockfd, message);
-
-//     // 6. Handle response
-//     int result = recvResult(sockfd);
-    
-//     switch(result){
-//         case ADD_FILM_SHOWTIME_SUCCESS:
-//             printf("\n✓ Film and showtime added successfully!\n");
-//             break;
-//         case FILM_EXISTS:
-//             printf("\n✗ Film '%s' already exists!\n", title);
-//             printf("Tip: Use a different title or add showtime to existing film.\n");
-//             break;
-//         case ROOM_CONFLICT:
-//             printf("\n✗ Room is occupied at this time!\n");
-//             printf("Please choose a different time slot.\n");
-//             break;
-//         case INVALID_CATEGORY:
-//             printf("\n✗ Invalid category ID!\n");
-//             break;
-//         case INVALID_ROOM:
-//             printf("\n✗ Invalid room ID or room is inactive!\n");
-//             break;
-//         case INVALID_DATETIME:
-//             printf("\n✗ Invalid datetime format!\n");
-//             printf("Format: YYYY-MM-DD HH:MM:SS (e.g., 2025-01-20 14:30:00)\n");
-//             break;
-//         case ADD_FILM_SHOWTIME_FAIL:
-//         default:
-//             printf("\n✗ Failed to add film and showtime!\n");
-//             break;
-//     }
-// }
-/*----------END ADD FILM----------*/
-
 
 /*----------BOOK TICKET--------*/
 void handleBookTicket(int sockfd) {
@@ -408,59 +292,6 @@ void handleSearchByTitle(int sockfd){
 }
 /*----------END FIND FILM--------*/
 
-
-/*----------ADD FILM (ADMIN)--------*/
-void handleAddNewFilm(int sockfd){
-    char title[255];
-    char category_id[255];
-    char show_time[255];
-    char description[2048];
-    char message[4096];
-
-    printf("\n=== ADD NEW FILM ===\n");
-    
-    // Show category list
-    memset(message, 0, sizeof(message));
-    sprintf(message, "SHOW_CATEGORIES\r\n");
-    sendMessage(sockfd, message);
-    
-    // Read until "END"
-    while(1){
-        memset(message, 0, sizeof(message));
-        recvMessage(sockfd, message);
-        if(strcmp(message, "END") == 0) break;
-        printf("%s\n", message);
-    }
-    
-    printf("Enter film title: ");
-    fgets(title, sizeof(title), stdin);
-    title[strcspn(title, "\n")] = 0;
-    
-    printf("Enter category ID: ");
-    fgets(category_id, sizeof(category_id), stdin);
-    category_id[strcspn(category_id, "\n")] = 0;
-    
-    printf("Enter duration (minutes): ");
-    fgets(show_time, sizeof(show_time), stdin);
-    show_time[strcspn(show_time, "\n")] = 0;
-    
-    printf("Enter description: ");
-    fgets(description, sizeof(description), stdin);
-    description[strcspn(description, "\n")] = 0;
-    
-    memset(message, 0, sizeof(message));
-    sprintf(message, "ADD_FILM\r\n%s\r\n%s\r\n%s\r\n%s\r\n", 
-            title, category_id, show_time, description);
-    sendMessage(sockfd, message);
-
-    int result = recvResult(sockfd);
-    if(result == ADD_FILM_SUCCESS){
-        printf("\nADD FILM SUCCESS!\n");
-    }else if(result == ADD_FILM_FAIL){
-        printf("\nADD FILM FAILED!\n");
-    }
-}
-/*----------END ADD FILM--------*/
 
 
 /*----------BROWSE FILM--------*/
@@ -642,3 +473,101 @@ void handleBrowseFilm(int sockfd){
 
 // }
 
+
+/*----------MANAGER--------*/
+void handleRequestManager(int sockfd, char *username, char *message) {
+    int manager_choice = 0;
+    do {
+        viewManager();
+        printf("Choice: ");
+        scanf("%d", &manager_choice);
+        clearKeyboardBuffer();
+        switch (manager_choice) {
+            case 1: {
+                handleAddFilm(sockfd);
+                break;
+            }
+            // case 2: {
+            //     handleAddShowTime(sockfd);
+            //     break;
+            // }    
+            case 4: {
+                handleBrowseFilm(sockfd);
+                break;
+            }
+            case 5: {
+                handleLogout(sockfd, message);
+                manager_choice = 0;
+                break;
+            }
+            default: {
+                printf("Invalid choice!\n");
+            }
+        }
+    } while (manager_choice != 0);     
+}
+
+/*-----ADD FILM-----*/
+
+void handleAddFilm(int sockfd) {
+    char title[255];
+    char category_id[20];
+    char show_time[20]; // in minutes
+    char message[2048];
+
+    printf("\n=== ADD NEW FILM ===\n");
+    // 1. Show all categories
+    memset(message, 0, sizeof(message));
+    sprintf(message, "SHOW_CATEGORIES\r\n");
+    sendMessage(sockfd, message);
+
+    printf("\nAvailable Categories: \n");
+    while (1) {
+        memset(message, 0, sizeof(message));
+        recvMessage(sockfd, message);
+        if (strcmp(message, "END") == 0) 
+            break;
+        printf("%s\n", message);
+    }
+    // 2. Enter film info
+    printf("Enter film title: ");
+    fgets(title, sizeof(title), stdin);
+    title[strcspn(title, "\n")] = 0;    
+
+    if (strlen(title) == 0) {
+        printf("Title cannot be empty!\n");
+        return;
+    }
+    printf("Enter category ID: ");
+    fgets(category_id, sizeof(category_id), stdin);
+    category_id[strcspn(category_id, "\n")] = 0;    
+
+    printf("Enter show time (in minutes): ");
+    fgets(show_time, sizeof(show_time), stdin);
+    show_time[strcspn(show_time, "\n")] = 0; 
+    
+    int duration = atoi(show_time);
+    if (duration <= 0) {
+        printf("Invalid show time!\n");
+        return;
+    }
+
+    // 3. Send message to server
+    memset(message, 0, sizeof(message));
+    sprintf(message, "ADD_FILM\r\n%s\r\n%s\r\n%s\r\n", title, category_id, show_time);
+    sendMessage(sockfd, message);
+
+    // 4. Receive result from server
+    int result = recvResult(sockfd);
+    if (result == ADD_FILM_SUCCESS) {
+        printf(ADD_FILM_SUCCESS_MESSAGE);
+    } else if (result == FILM_EXISTS) {
+        printf(FILM_EXISTS_MESSAGE);
+    } else if (result == ADD_FILM_FAIL) {
+        printf(ADD_FILM_FAIL_MESSAGE);
+    }
+
+}
+/*-----END ADD FILM-----*/
+
+/*----------END MANAGER----------*/
