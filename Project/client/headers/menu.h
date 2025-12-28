@@ -58,6 +58,8 @@
 #define ADD_FILM_SUCCESS_MESSAGE "Add new film successfully!!\n"
 #define ADD_FILM_FAIL 2041
 #define ADD_FILM_FAIL_MESSAGE "ADD new film failed!!\n"
+#define FILM_EXISTS 2042
+#define FILM_EXISTS_MESSAGE "Film already exists in the system!!\n"
 /*----------END ADD FILM--------*/
 
 /*----------ADMIN MANAGEMENT----------*/

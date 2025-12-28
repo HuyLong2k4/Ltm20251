@@ -13,4 +13,11 @@ void handleRequestAdmin(int sockfd, char *username, char *message);
 void handleLogout(int sockfd, char *message);
 void handleChangePassword(int sockfd, char *username, char *message);
 
+/*----------MANAGER--------*/
+void handleRequestManager(int sockfd, char *username, char *message);
+/*-----ADD FILM-----*/
+void handleAddFilm(sockfd);
+/*-----END ADD FILM-----*/
+/*----------END MANAGER----------*/
+
 #endif

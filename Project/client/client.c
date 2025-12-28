@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
                     handleRequestUser(sockfd, username, message);
                 } 
                 else if(login_status == LOGIN_SUCCESS_MANAGER){
-                    // handleRequestManager(sockfd, username, message);
+                    handleRequestManager(sockfd, username, message);
                 }
                 else if(login_status == LOGIN_SUCCESS_ADMIN){
                     handleRequestAdmin(sockfd, username, message);

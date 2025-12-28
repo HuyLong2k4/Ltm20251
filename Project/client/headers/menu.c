@@ -33,7 +33,7 @@ void viewRegister(char *name, char *username, char *password) {
 
 void viewUser(){
     printf("--------------Welcome to HTV-SPM------------------\n\n");
-    printf("1. Browse film catalogs\n");
+    printf("1. Browse films\n");
     printf("2. Search film \n");
     printf("3. Book ticket\n");
     printf("4. Logout\n");
@@ -160,9 +160,10 @@ void getSeatID(char *seat_id) {
 void viewManager(){
     printf("--------------Welcome to Manager-----------------\n\n");
     printf("1. Add new film\n");
-    printf("2. Announcing film \n");
-    printf("3. Edit announced film\n");
-    printf("4. Logout\n\n");
+    // printf("2. Add show time for film \n");
+    // printf("3. Edit show time for film\n");
+    printf("4. Browse films \n");
+    printf("5. Logout\n\n");
     printf("---------------------------------------------------\n");
 }
 
@@ -174,3 +175,4 @@ void viewAdmin(){
     printf("4. Logout\n\n");
     printf("---------------------------------------------------\n");
 }
+
