@@ -127,30 +127,460 @@ void handleChangePassword( int connfd, MYSQL *conn, node *h){
         changeNodePassword(h, username, newPassword);
         sendResult(connfd, CHANGE_PASSWORD_SUCCESS);
     } else {
+        
         sendResult(connfd, CHANGE_PASSWORD_FAIL);
     }
 }
 
-// premiered: công chiếu
-// void handleAnnouncingFilm( int connfd, MYSQL *conn, nodeFilm f, nodeCinema ci, nodePremieredTime pt, nodePremieredTimeFilm ptf ){
-//     char film_id[255] = {0};
-//     char cinema_id[255] = {0};
-//     char premiered_time_id[255] = {0}; 
-//     char date[255] = {0};
-//     getAnnounceFilmMessage(film_id, cinema_id, premiered_time_id, date);
-//     // Ý nghĩa: ID gửi từ client là string, Cần convert sang số để, tìm kiếm, lưu DB
-//     unsigned long film_id_search = strtoul(film_id, NULL, 10);
-//     unsigned long cinema_id_search = strtoul(cinema_id, NULL, 10);
-//     unsigned long premiered_time_search = strtoul(premiered_time_id, NULL, 10);
+/*----------ADD FILM--------*/
+// void handleAddNewFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time, char *description) {
+//     char query[1024];
+//     snprintf(query, sizeof(query),
+//         "INSERT INTO films (title, category_id, show_time, description) "
+//         "VALUES ('%s', %s, %s, '%s')",
+//         title, category_id, show_time, description);
 
-//     int seru = searchPremieredTimeFilmToPost(ptf, film_id_search, cinema_id_search, premiered_time_search, date);
-//     if (seru != 0)
-//     {
-//         sendResult(connfd, POST_FILM_FAIL);
+//     if (mysql_query(conn, query) != 0) {
+//         sendResult(connfd, ADD_FILM_FAIL);
+//         return;
 //     }
-//     else
-//     {
-//         premieredTimeFilm newPremieredTimeFilm;
+
+//     sendResult(connfd, ADD_FILM_SUCCESS);
+// }
+/*----------END ADD FILM--------*/
+
+
+
+
+
+
+/*----------FIND FILM--------*/
+void handleSearchFilmByTitle(MYSQL *conn, int connfd, char *title) {
+    char message[1024] = {0};
+    char query[512];
+    
+    snprintf(query, sizeof(query),
+        "SELECT f.id, f.title, c.name AS category, f.show_time "
+        "FROM films f JOIN categories c ON f.category_id = c.id "
+        "WHERE f.title LIKE '%%%s%%'", title);
+
+    if (mysql_query(conn, query) != 0) {
+        sendResult(connfd, FIND_FILM_FAIL);
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if (!res || mysql_num_rows(res) == 0) {
+        sendResult(connfd, FIND_FILM_FAIL);
+        if (res) mysql_free_result(res);
+        return;
+    }
+
+    sendResult(connfd, FIND_FILM_SUCCESS);
+
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(res))) {
+        snprintf(message, sizeof(message),
+            "ID: %s | Title: %s | Category: %s | Show_time: %s minutes",
+            row[0], row[1], row[2], row[3]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+/*----------END FIND FILM--------*/
+
+
+
+/*----------BROWSE FILM----------*/
+
+
+void handleShowCategory(MYSQL *conn, int connfd){
+    char query[512];
+    char message[1024];
+
+    sprintf(query, "SELECT id, name FROM categories");
+
+    if(mysql_query(conn, query) != 0){
+        sendMessage(connfd, "Cant load the list of categories!");
+        sendMessage(connfd, "END");  
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendMessage(connfd, "No categories available!");
+        sendMessage(connfd, "END"); 
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    // Gửi từng dòng, không ghép hết vào 1 message
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(res))){
+        snprintf(message, sizeof(message), "%s. %s", row[0], row[1]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END"); 
+    mysql_free_result(res);
+}
+
+void handleShowCinema(MYSQL *conn, int connfd){
+    char query[512];
+    char message[1024];
+
+    sprintf(query, "SELECT id, name FROM cinemas");
+
+    if(mysql_query(conn, query) != 0){
+        sendMessage(connfd, "Cant load the list of cinemas!");
+        sendMessage(connfd, "END"); 
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendMessage(connfd, "No cinemas available!");
+        sendMessage(connfd, "END");  
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(res))){
+        snprintf(message, sizeof(message), "%s. %s", row[0], row[1]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END"); 
+    mysql_free_result(res);
+}
+
+void handleShowPremieredTime(MYSQL *conn, int connfd){
+    char query[512];
+    char message[1024];
+
+    // Lấy các khung giờ chiếu
+    sprintf(query, 
+        "SELECT DISTINCT "
+        "TIME_FORMAT(start_time, '%%H:%%i') as start, "
+        "TIME_FORMAT(end_time, '%%H:%%i') as end "
+        "FROM showtimes "
+        "ORDER BY start_time");
+
+    if(mysql_query(conn, query) != 0){
+        sendMessage(connfd, "Cant load the list of showtimes!");
+        sendMessage(connfd, "END");  
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendMessage(connfd, "No showtimes available!");
+        sendMessage(connfd, "END");  
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+   
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(res))){
+        snprintf(message, sizeof(message), "%s - %s", row[0], row[1]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");  
+    mysql_free_result(res);
+}
+
+void handleBrowseCategory(MYSQL *conn, int connfd, char *category_id){
+    char query[512];
+    char message[1024];
+
+    sprintf(query, "SELECT f.id, f.title, c.name AS category, f.show_time "
+                   "FROM films f JOIN categories c ON f.category_id = c.id "
+                   "WHERE f.category_id = %s", category_id);
+
+    if(mysql_query(conn, query) != 0){
+        sendResult(connfd, BROWSE_FAIL);
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendResult(connfd, BROWSE_FAIL);
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    sendResult(connfd, BROWSE_CATEGORY_SUCCESS);
+
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(res))){
+        snprintf(message, sizeof(message), "ID: %s | Title: %s | Category: %s | Show_time: %s minutes",
+                 row[0], row[1], row[2], row[3]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+
+void handleBrowseCinema(MYSQL *conn, int connfd, char *cinema_id){
+    char query[512];
+    char message[1024];
+
+    sprintf(query, 
+        "SELECT DISTINCT f.id, f.title, c.name AS category, f.show_time "
+        "FROM films f "
+        "JOIN categories c ON f.category_id = c.id "
+        "JOIN showtimes st ON st.film_id = f.id "
+        "JOIN rooms r ON st.room_id = r.id "
+        "WHERE r.cinema_id = %s", 
+        cinema_id);
+
+    if(mysql_query(conn, query) != 0){
+        sendResult(connfd, BROWSE_FAIL);
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendResult(connfd, BROWSE_FAIL);
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    sendResult(connfd, BROWSE_THEATER_SUCCESS);
+
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(res))){
+        snprintf(message, sizeof(message), "ID: %s | Title: %s | Category: %s | Show_time: %s minutes",
+                 row[0], row[1], row[2], row[3]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+void handleBrowseShowTime(MYSQL *conn, int connfd, char *time_slot){
+    char query[512];
+    char message[1024];
+
+    // Tìm phim có suất chiếu trong khung giờ
+    sprintf(query, 
+        "SELECT DISTINCT f.id, f.title, c.name AS category, f.show_time "
+        "FROM films f "
+        "JOIN categories c ON f.category_id = c.id "
+        "JOIN showtimes st ON st.film_id = f.id "
+        "WHERE TIME_FORMAT(st.start_time, '%%H:%%i') = '%s'", 
+        time_slot);
+
+    if(mysql_query(conn, query) != 0){
+        sendResult(connfd, BROWSE_FAIL);
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendResult(connfd, BROWSE_FAIL);
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    sendResult(connfd, BROWSE_TIME_SUCCESS);
+
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(res))){
+        snprintf(message, sizeof(message), "ID: %s | Title: %s | Category: %s | Show_time: %s minutes",
+                 row[0], row[1], row[2], row[3]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+/*----------END BROWSE FILM----------*/
+
+
+/*----------BOOK TICKET--------*/
+void handleShowFilm(MYSQL *conn, int connfd) {
+    char query[512];
+    char message[1024];
+
+    sprintf(query, "SELECT id, title FROM films ORDER BY id");
+
+    if(mysql_query(conn, query) != 0){
+        sendMessage(connfd, "Cant load the list of films!");
+        sendMessage(connfd, "END");
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendMessage(connfd, "No films available!");
+        sendMessage(connfd, "END");
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    MYSQL_ROW row;
+    while((row = mysql_fetch_row(res))){
+        snprintf(message, sizeof(message), "%s. %s", row[0], row[1]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+void handleShowCinemaByFilm(MYSQL *conn, int connfd) {
+    char film_id[32] = {0};
+    char query[512];
+    char message[1024];
+
+    char *tmp = strtok(NULL, "\r\n");
+    if (!tmp) return;
+    strcpy(film_id, tmp);
+
+    sprintf(query,
+        "SELECT DISTINCT c.id, c.name "
+        "FROM cinemas c "
+        "JOIN rooms r ON r.cinema_id = c.id "
+        "JOIN showtimes st ON st.room_id = r.id "
+        "WHERE st.film_id = %s "
+        "ORDER BY c.id",
+        film_id
+    );
+
+    if (mysql_query(conn, query) != 0) {
+        sendMessage(connfd, "Cant load the list of cinemas!");
+        sendMessage(connfd, "END");
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if (!res || mysql_num_rows(res) == 0) {
+        sendMessage(connfd, "No cinemas available!");
+        sendMessage(connfd, "END");
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(res))) {
+        snprintf(message, sizeof(message), "%s. %s", row[0], row[1]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+void handleShowTimeByFilmCinema(MYSQL *conn, int connfd) {
+    char film_id[32] = {0};
+    char cinema_id[32] = {0};
+    char query[512];
+    char message[1024];
+
+    char *tmp1 = strtok(NULL, "\r\n");
+    char *tmp2 = strtok(NULL, "\r\n");
+    if (!tmp1 || !tmp2) return;
+
+    strcpy(film_id, tmp1);
+    strcpy(cinema_id, tmp2);
+
+    sprintf(query,
+        "SELECT st.id, st.start_time, st.end_time "
+        "FROM showtimes st "
+        "JOIN rooms r ON st.room_id = r.id "
+        "WHERE st.film_id = %s AND r.cinema_id = %s "
+        "ORDER BY st.start_time",
+        film_id, cinema_id
+    );
+
+    if (mysql_query(conn, query) != 0) {
+        sendMessage(connfd, "Cant load the list of showtimes!");
+        sendMessage(connfd, "END");
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if (!res || mysql_num_rows(res) == 0) {
+        sendMessage(connfd, "No showtimes available!");
+        sendMessage(connfd, "END");
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(res))) {
+        snprintf(message, sizeof(message), "%s. %s - %s",
+                 row[0], row[1], row[2]);
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
+
+/* 
+    Only get seats in the room of that showtime
+ */
+void handleShowSeat(MYSQL *conn, int connfd) {
+    char showtime_id[255] = {0};
+    char query[512];
+    char message[2048];
+
+    char *tmp = strtok(NULL, "\r\n");
+    if(tmp) strcpy(showtime_id, tmp);
+
+
+    sprintf(query,
+        "SELECT s.id, s.seat_number, s.row_name "
+        "FROM seats s "
+        "WHERE s.room_id = ("
+        "   SELECT room_id FROM showtimes WHERE id = %s"
+        ") "
+        "AND s.id NOT IN ("
+        "   SELECT seat_id FROM tickets WHERE showtime_id = %s"
+        ") "
+        "ORDER BY s.row_name, s.seat_number", 
+        showtime_id, showtime_id);
+
+    if(mysql_query(conn, query) != 0){
+        sendMessage(connfd, "Cant load the list of seats!");
+        sendMessage(connfd, "END");
+        return;
+    }
+
+    MYSQL_RES *res = mysql_store_result(conn);
+    if(!res || mysql_num_rows(res) == 0){
+        sendMessage(connfd, "No seats available!");
+        sendMessage(connfd, "END");
+        if(res) mysql_free_result(res);
+        return;
+    }
+
+    strcpy(message, "=== Available Seats ===\n");
+    MYSQL_ROW row;
+    int count = 0;
+    while((row = mysql_fetch_row(res))){
+        char line[128];
+        snprintf(line, sizeof(line), "SEAT|%s|%s%s", row[0], row[1], row[2]);
+        sendMessage(connfd, line);
+    }
+
+    // sendMessage(connfd, message);
+    sendMessage(connfd, "END");
+    mysql_free_result(res);
+}
 
 //         newPremieredTimeFilm.film_id = film_id_search;
 //         newPremieredTimeFilm.cinema_id = cinema_id_search;
