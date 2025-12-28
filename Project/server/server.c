@@ -153,11 +153,19 @@ void *handleCommunicate(void* arg){
         // Nếu message rỗng hoặc client đóng kết nối
         if (strlen(message) == 0) {
             printf("Client (fd: %d) disconnected unexpected.\n", connfd);
+            // Auto-logout user if they were logged in
+            if (strlen(username) > 0) {
+                handleLogout(connfd, &arr, username);
+            }
             break;
         }
 
         if(strcmp(message, "EXIT") == 0){
             printf("Client (fd: %d) disconnected safely.\n", connfd);
+            // Auto-logout if not already logged out
+            if (strlen(username) > 0) {
+                handleLogout(connfd, &arr, username);
+            }
             break;
         }
         
@@ -188,7 +196,7 @@ void *handleCommunicate(void* arg){
             }
             
         } else if(strcmp(cmd, "LOGOUT") == 0){
-            sendResult(connfd, LOGOUT_SUCCESS);
+            handleLogout(connfd, &arr, username);
             memset(username, 0, 255);
             
         } else if(strcmp(cmd, "CHANGE_PASSWORD") == 0){
