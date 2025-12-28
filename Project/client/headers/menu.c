@@ -36,8 +36,9 @@ void viewUser(){
     printf("1. Browse films\n");
     printf("2. Search film \n");
     printf("3. Book ticket\n");
-    printf("4. Logout\n");
-    printf("5. Change Password\n");
+    printf("4. View tickets\n");
+    printf("5. Logout\n");
+    printf("6. Change Password\n");
     printf("---------------------------------------------------\n");
 }
 
@@ -155,17 +156,30 @@ void getSeatID(char *seat_id) {
     getInput("Enter seat ID: ", seat_id, 255);
 }
 
-/*----------END BOOK TICKET--------*/
+/*----------END BOOK TICKET----------*/
+
+/*----------TICKET----------*/
+void viewTicket() {
+    printf("--------------TICKET MENU------------------\n\n");
+    printf("1. View ticket details\n");
+    printf("2. Go back\n\n");
+    printf("---------------------------------------------------\n");
+}
+/*----------END TICKET----------*/
+
+/*----------MANAGER----------*/
 
 void viewManager(){
     printf("--------------Welcome to Manager-----------------\n\n");
     printf("1. Add new film\n");
-    // printf("2. Add show time for film \n");
+    printf("2. Add show time for film \n");
     // printf("3. Edit show time for film\n");
-    printf("4. Browse films \n");
-    printf("5. Logout\n\n");
+    printf("3. Browse films \n");
+    printf("4. Logout\n\n");
     printf("---------------------------------------------------\n");
 }
+
+/*----------END MANAGER----------*/
 
 void viewAdmin(){
     printf("--------------ADMIN PANEL------------------\n\n");
