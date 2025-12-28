@@ -140,6 +140,122 @@ void handleChangePassword(int sockfd, char *username, char *message){
     }
 }
 
+
+/*----------ADD FILM----------*/
+
+// void handleAddFilmWithShowtime(int sockfd){
+//     char title[255];
+//     char category_id[20];
+//     char show_time[20];      // duration in minutes
+//     char room_id[20];
+//     char start_datetime[50]; // YYYY-MM-DD HH:MM:SS
+//     char message[4096];
+
+//     printf("\n=== ADD NEW FILM WITH SHOWTIME ===\n");
+    
+//     // 1. Show categories
+//     memset(message, 0, sizeof(message));
+//     sprintf(message, "SHOW_CATEGORIES\r\n");
+//     sendMessage(sockfd, message);
+    
+//     printf("\nAvailable Categories:\n");
+//     while(1){
+//         memset(message, 0, sizeof(message));
+//         recvMessage(sockfd, message);
+//         if(strcmp(message, "END") == 0) break;
+//         printf("%s\n", message);
+//     }
+    
+//     // 2. Input film info
+//     printf("\n--- FILM INFORMATION ---\n");
+//     printf("Enter film title: ");
+//     fgets(title, sizeof(title), stdin);
+//     title[strcspn(title, "\n")] = 0;
+    
+//     printf("Enter category ID: ");
+//     fgets(category_id, sizeof(category_id), stdin);
+//     category_id[strcspn(category_id, "\n")] = 0;
+    
+//     printf("Enter duration (minutes): ");
+//     fgets(show_time, sizeof(show_time), stdin);
+//     show_time[strcspn(show_time, "\n")] = 0;
+    
+//     // 3. Show available rooms
+//     memset(message, 0, sizeof(message));
+//     sprintf(message, "SHOW_ROOMS\r\n");
+//     sendMessage(sockfd, message);
+    
+//     printf("\n--- SHOWTIME INFORMATION ---\n");
+//     printf("Available Rooms:\n");
+//     while(1){
+//         memset(message, 0, sizeof(message));
+//         recvMessage(sockfd, message);
+//         if(strcmp(message, "END") == 0) break;
+//         printf("%s\n", message);
+//     }
+    
+//     printf("\nEnter room ID: ");
+//     fgets(room_id, sizeof(room_id), stdin);
+//     room_id[strcspn(room_id, "\n")] = 0;
+    
+//     // 4. Show current schedule for selected room
+//     printf("\nCurrent schedule for this room:\n");
+//     memset(message, 0, sizeof(message));
+//     sprintf(message, "SHOW_ROOM_SCHEDULE\r\n%s\r\n", room_id);
+//     sendMessage(sockfd, message);
+    
+//     while(1){
+//         memset(message, 0, sizeof(message));
+//         recvMessage(sockfd, message);
+//         if(strcmp(message, "END") == 0) break;
+//         printf("%s\n", message);
+//     }
+    
+//     printf("\nEnter start time (YYYY-MM-DD HH:MM:SS): ");
+//     printf("\nExample: 2025-01-20 14:30:00\n> ");
+//     fgets(start_datetime, sizeof(start_datetime), stdin);
+//     start_datetime[strcspn(start_datetime, "\n")] = 0;
+    
+//     // 5. Send all data to server
+//     memset(message, 0, sizeof(message));
+//     sprintf(message, "ADD_FILM_SHOWTIME\r\n%s\r\n%s\r\n%s\r\n%s\r\n%s\r\n", 
+//             title, category_id, show_time, room_id, start_datetime);
+//     sendMessage(sockfd, message);
+
+//     // 6. Handle response
+//     int result = recvResult(sockfd);
+    
+//     switch(result){
+//         case ADD_FILM_SHOWTIME_SUCCESS:
+//             printf("\n✓ Film and showtime added successfully!\n");
+//             break;
+//         case FILM_EXISTS:
+//             printf("\n✗ Film '%s' already exists!\n", title);
+//             printf("Tip: Use a different title or add showtime to existing film.\n");
+//             break;
+//         case ROOM_CONFLICT:
+//             printf("\n✗ Room is occupied at this time!\n");
+//             printf("Please choose a different time slot.\n");
+//             break;
+//         case INVALID_CATEGORY:
+//             printf("\n✗ Invalid category ID!\n");
+//             break;
+//         case INVALID_ROOM:
+//             printf("\n✗ Invalid room ID or room is inactive!\n");
+//             break;
+//         case INVALID_DATETIME:
+//             printf("\n✗ Invalid datetime format!\n");
+//             printf("Format: YYYY-MM-DD HH:MM:SS (e.g., 2025-01-20 14:30:00)\n");
+//             break;
+//         case ADD_FILM_SHOWTIME_FAIL:
+//         default:
+//             printf("\n✗ Failed to add film and showtime!\n");
+//             break;
+//     }
+// }
+/*----------END ADD FILM----------*/
+
+
 /*----------BOOK TICKET--------*/
 void handleBookTicket(int sockfd) {
     int choose;

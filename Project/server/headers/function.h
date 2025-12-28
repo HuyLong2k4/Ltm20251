@@ -34,4 +34,6 @@ void handleBrowseCategory(MYSQL *conn, int connfd, char *category_id);
 void handleBrowseCinema(MYSQL *conn, int connfd, char *cinema_id);
 void handleBrowseShowTime(MYSQL *conn, int connfd, char *premiered_time_id);
 
+
+
 #endif

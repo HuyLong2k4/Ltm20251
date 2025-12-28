@@ -124,9 +124,31 @@ void handleChangePassword( int connfd, MYSQL *conn, node *h){
         changeNodePassword(h, username, newPassword);
         sendResult(connfd, CHANGE_PASSWORD_SUCCESS);
     } else {
+        
         sendResult(connfd, CHANGE_PASSWORD_FAIL);
     }
 }
+
+/*----------ADD FILM--------*/
+// void handleAddNewFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time, char *description) {
+//     char query[1024];
+//     snprintf(query, sizeof(query),
+//         "INSERT INTO films (title, category_id, show_time, description) "
+//         "VALUES ('%s', %s, %s, '%s')",
+//         title, category_id, show_time, description);
+
+//     if (mysql_query(conn, query) != 0) {
+//         sendResult(connfd, ADD_FILM_FAIL);
+//         return;
+//     }
+
+//     sendResult(connfd, ADD_FILM_SUCCESS);
+// }
+/*----------END ADD FILM--------*/
+
+
+
+
 
 
 /*----------FIND FILM--------*/
@@ -167,8 +189,10 @@ void handleSearchFilmByTitle(MYSQL *conn, int connfd, char *title) {
 
 /*----------END FIND FILM--------*/
 
+
+
 /*----------BROWSE FILM----------*/
-/*----------BROWSE CATEGORY----------*/
+
 
 void handleShowCategory(MYSQL *conn, int connfd){
     char query[512];
