@@ -16,7 +16,7 @@ void handleChangePassword(int sockfd, char *username, char *message);
 /*----------MANAGER--------*/
 void handleRequestManager(int sockfd, char *username, char *message);
 /*-----ADD FILM-----*/
-void handleAddFilm(sockfd);
+void handleAddFilm(int sockfd);
 /*-----END ADD FILM-----*/
 /*----------END MANAGER----------*/
 

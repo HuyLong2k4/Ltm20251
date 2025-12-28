@@ -506,6 +506,16 @@ void handleRequestManager(int sockfd, char *username, char *message) {
             case 5: {
                 handleLogout(sockfd, message);
                 manager_choice = 0;
+                break;
+            }
+            default: {
+                printf("Invalid choice!\n");
+                break;
+            }
+        }
+    } while(manager_choice != 0);
+}
+
 /*----------ADMIN MANAGEMENT--------*/
 
 void handleShowAllUsers(int sockfd){
@@ -607,9 +617,10 @@ void handleRequestAdmin(int sockfd, char *username, char *message){
             }
             default: {
                 printf("Invalid choice!\n");
+                break;
             }
         }
-    } while (manager_choice != 0);     
+    } while (admin_choice != 0);     
 }
 
 /*-----ADD FILM-----*/
