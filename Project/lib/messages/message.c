@@ -218,3 +218,29 @@ void getBookTicketMessage(char *showtime_id, char *seat_id) {
 //     if (tmp_seat) strcpy(seat_id, tmp_seat);
 // }
 /*----------END BOOK TICKET--------*/
+
+// Manager control
+
+void makeAnnounceFilmMessage(char *film_id, char *cinema_id, char *premiered_time_id, char *date, char *message) {
+    strcpy(message, "POST_FILM\r\n");
+    strcat(message, film_id);
+    strcat(message, "\r\n");
+    strcat(message, cinema_id);
+    strcat(message, "\r\n");
+    strcat(message, premiered_time_id);
+    strcat(message, "\r\n");
+    strcat(message, date);
+    strcat(message, "\r\n");
+} 
+
+void getAnnounceFilmMessage(char *film_id, char *cinema_id, char *premiered_time_id, char *date) {
+    char *tmp_film_id = strtok(NULL, "\r\n");
+    char *tmp_cinema_id = strtok(NULL, "\r\n");
+    char *tmp_premiered_time_id = strtok(NULL, "\r\n");
+    char *tmp_date = strtok(NULL, "\r\n");
+
+    if(tmp_film_id) strcpy(film_id, tmp_film_id);
+    if(tmp_cinema_id) strcpy(cinema_id, tmp_cinema_id);
+    if(tmp_premiered_time_id) strcpy(premiered_time_id, tmp_premiered_time_id);
+    if(tmp_date) strcpy(date, tmp_date);
+}

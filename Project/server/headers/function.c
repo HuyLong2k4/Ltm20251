@@ -4,62 +4,65 @@
 #include "../../lib/socket/socket.h"
 #include "../../lib/messages/message.h"
 #include "queryUser.h"
-#include <pthread.h>
+#include "queryPremieredTime.h"
+#include "queryPremieredTimeFilm.h"
+#include "queryFilm.h"
+#include "queryCategory.h"
+#include "function.h"
+#include "queryCinema.h"
+#include "queryPremieredTime.h"
+#include "queryPremieredTimeFilm.h"
 
-// --- Extern mutex từ server_out.c ---
-extern pthread_mutex_t db_lock;
 
-
-#define LOGIN_SUCCESS_USER     1010
-#define LOGIN_SUCCESS_ADMIN    1011
-#define LOGIN_FAIL             2011
-#define LOGIN_ALREADY          2012
-#define LOGOUT_SUCCESS         1030
-#define REGISTER_SUCCESS       1020
-#define REGISTER_FAIL          2021
-#define CHANGE_PASSWORD_SUCCESS 1110
-#define CHANGE_PASSWORD_FAIL    2110
-
-/*----------FIND FILM--------*/
-#define FIND_FILM_SUCCESS 1073
-#define FIND_FILM_FAIL 2072 
-/*----------END FIND FILM--------*/
-
-/*----------BROWSE FILM----------*/
+#define LOGIN_SUCCESS_USER 1010
+#define LOGIN_SUCCESS_ADMIN 1011
+#define LOGIN_FAIL 2011
+#define LOGIN_ALREADY 2012
+#define LOGOUT_SUCCESS 1030
+#define REGISTER_SUCCESS 1020
+#define REGISTER_FAIL 2021
+#define ADD_FILM_SUCCESS 1040
+#define ADD_FILM_FAIL 2041
+#define POST_FILM_SUCCESS 1050
+#define POST_FILM_FAIL 2051
+#define EDIT_FILM_SUCCESS 1060
+#define EDIT_FILM_FAIL 2061
+#define NO_EDIT_FILM 2062
 #define BROWSE_CATEGORY_SUCCESS 1070
 #define BROWSE_THEATER_SUCCESS 1071
 #define BROWSE_TIME_SUCCESS 1072
 #define BROWSE_FAIL 2071
-/*----------END BROWSE FILM----------*/
+#define FIND_FILM_SUCCESS 1073
+#define FIND_FILM_FAIL 2072
+#define VIEW_CHAIR_SUCCESS 1080
+#define VIEW_CHAIR_FAIL 2081
+#define CHOOSE_CHAIR_SUCCESS 1090
+#define CHOOSE_CHAIR_FAIL 2091
+#define BOOK_TICKET_SUCCESS 1100
+#define BOOK_TICKET_FAIL 2101
+#define CHANGE_PASSWORD_SUCCESS 1110
+#define CHANGE_PASSWORD_FAIL 2110
 
-/*----------BOOKING TICKET----------*/
-#define BOOK_TICKET_SUCCESS 1200
-#define BOOK_TICKET_FAIL 2200
-/*----------END BOOKING TICKET----------*/
-
-
-// void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h);
+void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h);
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password);
 void handleLogout( int connfd, listLoginedAccount *arr, char *username);
 void handleRegister( MYSQL *conn, int connfd, node *h);
 void handleChangePassword( int connfd, MYSQL *conn, node *h);
 
-
-
-// void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h){
-//     if (strcmp(type, "LOGIN") == 0) {
-//         handleLogin(connfd, arr, h, username, password);
-//     }
-//     else if (strcmp(type, "LOGOUT") == 0) {
-//         handleLogout(connfd, arr, username);
-//     }
-//     else if (strcmp(type, "REGISTER") == 0) {
-//         handleRegister(conn, connfd, h);
-//     }
-//     else if (strcmp(type, "CHANGE_PASSWORD") == 0) {
-//         handleChangePassword(connfd, conn, h);
-//     }
-// }
+void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h){
+    if (strcmp(type, "LOGIN") == 0) {
+        handleLogin(connfd, arr, h, username, password);
+    }
+    else if (strcmp(type, "LOGOUT") == 0) {
+        handleLogout(connfd, arr, username);
+    }
+    else if (strcmp(type, "REGISTER") == 0) {
+        handleRegister(conn, connfd, h);
+    }
+    else if (strcmp(type, "CHANGE_PASSWORD") == 0) {
+        handleChangePassword(connfd, conn, h);
+    }
+}
 
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password){
     int check = checkLogin(*h, &username, password, arr);
@@ -579,31 +582,15 @@ void handleShowSeat(MYSQL *conn, int connfd) {
     mysql_free_result(res);
 }
 
-void handleBookTicket(
-    MYSQL *conn,
-    int connfd,
-    char *username,
-    char *showtime_id,
-    char *seat_id
-) {
-    int user_id = getUserIdByUsername(conn, username);
-    char query[512];
+//         newPremieredTimeFilm.film_id = film_id_search;
+//         newPremieredTimeFilm.cinema_id = cinema_id_search;
+//         newPremieredTimeFilm.premiered_time_id = premiered_time_search;
+//         strcpy(newPremieredTimeFilm.date, date);
 
-    mysql_query(conn, "START TRANSACTION");
+//         addNodePremieredTimeFilm(&ptf, newPremieredTimeFilm);
 
-    sprintf(query,
-        "INSERT INTO tickets(user_id, showtime_id, seat_id) "
-        "VALUES(%d, %s, %s)",
-        user_id, showtime_id, seat_id
-    );
+//         addPremieredTimeFilm(conn, newPremieredTimeFilm);
 
-    if (mysql_query(conn, query) == 0) {
-        mysql_query(conn, "COMMIT");
-        sendResult(connfd, BOOK_TICKET_SUCCESS);
-    } else {
-        mysql_query(conn, "ROLLBACK");
-        sendResult(connfd, BOOK_TICKET_FAIL);
-    }
-}
-
-/*----------END BOOK TICKET--------*/
+//         sendResult(connfd, POST_FILM_SUCCESS);
+//     }
+// }

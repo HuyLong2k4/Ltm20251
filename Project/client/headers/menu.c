@@ -49,6 +49,7 @@ void viewChangePassword(char *oldPassword, char *newPassword) {
     scanf("%s", newPassword);
 }
 
+
 // --------------------
 
 void getInput(const char *prompt, char *out, int max_len) {
@@ -156,3 +157,11 @@ void getSeatID(char *seat_id) {
 
 /*----------END BOOK TICKET--------*/
 
+void viewManager(){
+    printf("--------------Welcome to Manager-----------------\n\n");
+    printf("1. Add new film\n");
+    printf("2. Announcing film \n");
+    printf("3. Edit announced film\n");
+    printf("4. Logout\n\n");
+    printf("---------------------------------------------------\n");
+}

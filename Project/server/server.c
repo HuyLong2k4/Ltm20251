@@ -193,64 +193,65 @@ void *handleCommunicate(void* arg){
             
         } else if(strcmp(cmd, "CHANGE_PASSWORD") == 0){
             handleChangePassword(connfd, conn, &head);
+        }
         
         /* ========== BROWSE FILM ========== */
-        } else if(strcmp(cmd, "SHOW_CATEGORIES") == 0){
-            handleShowCategory(conn, connfd);
+        // } else if(strcmp(cmd, "SHOW_CATEGORIES") == 0){
+        //     handleShowCategory(conn, connfd);
     
-        } else if(strcmp(cmd, "BROWSE_BY_CATEGORY") == 0){  
-            char *category_id = strtok(NULL, "\r\n");
-            if(category_id) {
-                handleBrowseCategory(conn, connfd, category_id);
-            }
+        // } else if(strcmp(cmd, "BROWSE_BY_CATEGORY") == 0){  
+        //     char *category_id = strtok(NULL, "\r\n");
+        //     if(category_id) {
+        //         handleBrowseCategory(conn, connfd, category_id);
+        //     }
 
-        } else if(strcmp(cmd, "SHOW_CINEMAS") == 0){  
-            handleShowCinema(conn, connfd);
+        // } else if(strcmp(cmd, "SHOW_CINEMAS") == 0){  
+        //     handleShowCinema(conn, connfd);
 
-        } else if(strcmp(cmd, "BROWSE_BY_CINEMA") == 0){ 
-            char *cinema_id = strtok(NULL, "\r\n");
-            if(cinema_id) {
-                handleBrowseCinema(conn, connfd, cinema_id);
-            }
+        // } else if(strcmp(cmd, "BROWSE_BY_CINEMA") == 0){ 
+        //     char *cinema_id = strtok(NULL, "\r\n");
+        //     if(cinema_id) {
+        //         handleBrowseCinema(conn, connfd, cinema_id);
+        //     }
 
-        } else if(strcmp(cmd, "SHOW_PREMIERED_TIME") == 0){
-            handleShowPremieredTime(conn, connfd);
+        // } else if(strcmp(cmd, "SHOW_PREMIERED_TIME") == 0){
+        //     handleShowPremieredTime(conn, connfd);
 
-        } else if(strcmp(cmd, "BROWSE_BY_TIME") == 0){  
-            char *time_slot = strtok(NULL, "\r\n");
-            if(time_slot) {
-                handleBrowseShowTime(conn, connfd, time_slot);
-            }
+        // } else if(strcmp(cmd, "BROWSE_BY_TIME") == 0){  
+        //     char *time_slot = strtok(NULL, "\r\n");
+        //     if(time_slot) {
+        //         handleBrowseShowTime(conn, connfd, time_slot);
+        //     }
             
-        /* ========== BOOK TICKET ========== */
-        } else if(strcmp(cmd, "SHOW_FILMS") == 0){  
-            handleShowFilm(conn, connfd);
+        // /* ========== BOOK TICKET ========== */
+        // } else if(strcmp(cmd, "SHOW_FILMS") == 0){  
+        //     handleShowFilm(conn, connfd);
 
-        } else if(strcmp(cmd, "SHOW_CINEMA_BY_FILM") == 0){  
-            handleShowCinemaByFilm(conn, connfd);
+        // } else if(strcmp(cmd, "SHOW_CINEMA_BY_FILM") == 0){  
+        //     handleShowCinemaByFilm(conn, connfd);
 
-        } else if(strcmp(cmd, "SHOW_TIME_BY_FILM_CINEMA") == 0){  
-            handleShowTimeByFilmCinema(conn, connfd);
+        // } else if(strcmp(cmd, "SHOW_TIME_BY_FILM_CINEMA") == 0){  
+        //     handleShowTimeByFilmCinema(conn, connfd);
 
-        } else if(strcmp(cmd, "SHOW_SEATS") == 0){  
-            handleShowSeat(conn, connfd);
+        // } else if(strcmp(cmd, "SHOW_SEATS") == 0){  
+        //     handleShowSeat(conn, connfd);
 
-        } else if (strcmp(cmd, "BOOK_TICKET") == 0) {
-            char *showtime_id = strtok(NULL, "\r\n");
-            char *seat_id = strtok(NULL, "\r\n");
-            if(showtime_id && seat_id) {
-                handleBookTicket(conn, connfd, username, showtime_id, seat_id);
-            }
-        /* ========== SEARCH FILM ========== */
-        } else if(strcmp(cmd, "SEARCH_FILM_BY_TITLE") == 0){  
-            char *title = strtok(NULL, "\r\n");
-            if(title) {
-                handleSearchFilmByTitle(conn, connfd, title);
-            }
-        } else {
-            printf("[ERROR] Unknown command from fd %d: %s\n", connfd, cmd);
-            sendMessage(connfd, "ERROR: Unknown command."); 
-        }
+        // } else if (strcmp(cmd, "BOOK_TICKET") == 0) {
+        //     char *showtime_id = strtok(NULL, "\r\n");
+        //     char *seat_id = strtok(NULL, "\r\n");
+        //     if(showtime_id && seat_id) {
+        //         handleBookTicket(conn, connfd, username, showtime_id, seat_id);
+        //     }
+        // /* ========== SEARCH FILM ========== */
+        // } else if(strcmp(cmd, "SEARCH_FILM_BY_TITLE") == 0){  
+        //     char *title = strtok(NULL, "\r\n");
+        //     if(title) {
+        //         handleSearchFilmByTitle(conn, connfd, title);
+        //     }
+        // } else {
+        //     printf("[ERROR] Unknown command from fd %d: %s\n", connfd, cmd);
+        //     sendMessage(connfd, "ERROR: Unknown command."); 
+        // }
     }
 
     mysql_close(conn);
