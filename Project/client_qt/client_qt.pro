@@ -17,6 +17,9 @@ SOURCES += \
     logindialog.cpp \
     registerdialog.cpp \
     changepassworddialog.cpp \
+    browsefilmdialog.cpp \
+    searchfilmdialog.cpp \
+    bookticketdialog.cpp \
     ../lib/socket/socket.c \
     ../lib/messages/message.c
 
@@ -25,6 +28,9 @@ HEADERS += \
     logindialog.h \
     registerdialog.h \
     changepassworddialog.h \
+    browsefilmdialog.h \
+    searchfilmdialog.h \
+    bookticketdialog.h \
     ../lib/socket/socket.h \
     ../lib/messages/message.h \
     ../client/headers/menu.h \

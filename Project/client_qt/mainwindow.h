@@ -16,6 +16,9 @@ QT_END_NAMESPACE
 class LoginDialog;
 class RegisterDialog;
 class ChangePasswordDialog;
+class BrowseFilmDialog;
+class SearchFilmDialog;
+class BookTicketDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -35,6 +38,9 @@ private slots:
     void onLogoutClicked();
     void onChangePasswordClicked();
     void onExitClicked();
+    void onBrowseFilmClicked();
+    void onSearchFilmClicked();
+    void onBookTicketClicked();
 
 private:
     QStackedWidget *stackedWidget;
@@ -47,6 +53,9 @@ private:
     
     QPushButton *logoutBtn;
     QPushButton *changePasswordBtn;
+    QPushButton *browseFilmBtn;
+    QPushButton *searchFilmBtn;
+    QPushButton *bookTicketBtn;
     
     QLabel *userLabel;
     QLabel *statusLabel;

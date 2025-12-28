@@ -2,6 +2,9 @@
 #include "logindialog.h"
 #include "registerdialog.h"
 #include "changepassworddialog.h"
+#include "browsefilmdialog.h"
+#include "searchfilmdialog.h"
+#include "bookticketdialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
@@ -63,15 +66,24 @@ MainWindow::MainWindow(int sockfd, QWidget *parent)
     userLabel->setAlignment(Qt::AlignCenter);
     userLabel->setStyleSheet("font-size: 16px; color: green; margin: 10px;");
     
+    browseFilmBtn = new QPushButton("Browse Film Catalogs", userPage);
+    searchFilmBtn = new QPushButton("Search Film", userPage);
+    bookTicketBtn = new QPushButton("Book Ticket", userPage);
     changePasswordBtn = new QPushButton("Change Password", userPage);
     logoutBtn = new QPushButton("Logout", userPage);
     
+    browseFilmBtn->setMinimumHeight(40);
+    searchFilmBtn->setMinimumHeight(40);
+    bookTicketBtn->setMinimumHeight(40);
     changePasswordBtn->setMinimumHeight(40);
     logoutBtn->setMinimumHeight(40);
     
     userLayout->addWidget(userTitleLabel);
     userLayout->addWidget(userLabel);
     userLayout->addStretch();
+    userLayout->addWidget(browseFilmBtn);
+    userLayout->addWidget(searchFilmBtn);
+    userLayout->addWidget(bookTicketBtn);
     userLayout->addWidget(changePasswordBtn);
     userLayout->addWidget(logoutBtn);
     userLayout->addStretch();
@@ -89,6 +101,9 @@ MainWindow::MainWindow(int sockfd, QWidget *parent)
     connect(exitBtn, &QPushButton::clicked, this, &MainWindow::onExitClicked);
     connect(logoutBtn, &QPushButton::clicked, this, &MainWindow::onLogoutClicked);
     connect(changePasswordBtn, &QPushButton::clicked, this, &MainWindow::onChangePasswordClicked);
+    connect(browseFilmBtn, &QPushButton::clicked, this, &MainWindow::onBrowseFilmClicked);
+    connect(searchFilmBtn, &QPushButton::clicked, this, &MainWindow::onSearchFilmClicked);
+    connect(bookTicketBtn, &QPushButton::clicked, this, &MainWindow::onBookTicketClicked);
     
     // Show welcome page
     showWelcomeScreen();
@@ -162,4 +177,22 @@ void MainWindow::onChangePasswordClicked()
 void MainWindow::onExitClicked()
 {
     close();
+}
+
+void MainWindow::onBrowseFilmClicked()
+{
+    BrowseFilmDialog dialog(sockfd, this);
+    dialog.exec();
+}
+
+void MainWindow::onSearchFilmClicked()
+{
+    SearchFilmDialog dialog(sockfd, this);
+    dialog.exec();
+}
+
+void MainWindow::onBookTicketClicked()
+{
+    BookTicketDialog dialog(sockfd, this);
+    dialog.exec();
 }
