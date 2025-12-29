@@ -133,8 +133,7 @@ void handleRequestUser(int sockfd, char *username, char *message) {
 void handleLogout(int sockfd, char *message){
     makeLogoutMessage(message);
     sendMessage(sockfd, message);
-    int result = recvResult(sockfd);
-    // printf("%d\n", result);
+    recvResult(sockfd);
     printf(LOGOUT_SUCCESS_MESSAGE);
 }
 

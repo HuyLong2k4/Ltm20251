@@ -20,6 +20,7 @@ class BrowseFilmDialog;
 class SearchFilmDialog;
 class BookTicketDialog;
 class AdminDialog;
+class ManagerDialog;
 
 class MainWindow : public QMainWindow
 {
