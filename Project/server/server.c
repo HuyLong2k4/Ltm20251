@@ -274,10 +274,43 @@ void *handleCommunicate(void* arg) {
                 printf("[DEBUG] ADD_FILM params - title: %s, category_id: %s, show_time: %s\n", title, category_id, show_time);
                 handleAddFilm(conn, connfd, title, category_id, show_time);
             }
+        /* ========== VIEW TICKETS ========== */
+        } else if(strcmp(cmd, "VIEW_TICKETS") == 0) {
+            char *username = strtok(NULL, "\r\n");
+            if (username)
+                handleViewTickets(conn, connfd, username);
+        } else if(strcmp(cmd, "VIEW_TICKET_DETAIL") == 0) {
+            char *ticket_id = strtok(NULL, "\r\n");
+            if (ticket_id)
+                handleViewTicketDetail(conn, connfd, ticket_id);
+        /* ========== ADD SHOW TIME ========== */
+        // } else if(strcmp(cmd, "SHOW_FILMS") == 0){  
+        //     handleShowFilm(conn, connfd);
+
+        // } Có dùng hàm này được ghi ở trên BOOK TICKET
+
+        // } else if(strcmp(cmd, "SHOW_CINEMAS") == 0){  
+        //     handleShowCinema(conn, connfd);
+        // } Có dùng hàm này được ghi ở trên BROWE FILM
+        } else if(strcmp(cmd, "SHOW_ROOMS_BY_CINEMA") == 0) {
+            char *cinema_id = strtok(NULL, "\r\n");
+            if (cinema_id)
+                handleShowRoomsByCinema(conn, connfd, cinema_id);
+        } else if(strcmp(cmd, "SHOW_SHOWTIMES_BY_ROOM") == 0) {
+            char *room_id = strtok(NULL, "\r\n");
+            if (room_id)
+                handleShowShowtimesByRoom(conn, connfd, room_id);
+        } else if(strcmp(cmd, "ADD_SHOWTIME") == 0) {
+            char *film_id = strtok(NULL, "\r\n");
+            char *cinema_id = strtok(NULL, "\r\n");
+            char *room_id = strtok(NULL, "\r\n");
+            char *start_datetime = strtok(NULL, "\r\n");
+            if(film_id && cinema_id && room_id && start_datetime) {
+                handleAddShowTime(conn, connfd, film_id, cinema_id, room_id, start_datetime);
+            }
         /* ========== ADMIN MANAGEMENT ========== */
         } else if(strcmp(cmd, "SHOW_ALL_USERS") == 0){
             handleShowAllUsers(conn, connfd);
-            
         } else if(strcmp(cmd, "DELETE_USER") == 0){
             handleDeleteUser(conn, connfd);
             

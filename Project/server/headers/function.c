@@ -51,20 +51,13 @@ void handleLogout( int connfd, listLoginedAccount *arr, char *username);
 void handleRegister( MYSQL *conn, int connfd, node *h);
 void handleChangePassword( int connfd, MYSQL *conn, node *h);
 
-// void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h){
-//     if (strcmp(type, "LOGIN") == 0) {
-//         handleLogin(connfd, arr, h, username, password);
-//     }
-//     else if (strcmp(type, "LOGOUT") == 0) {
-//         handleLogout(connfd, arr, username);
-//     }
-//     else if (strcmp(type, "REGISTER") == 0) {
-//         handleRegister(conn, connfd, h);
-//     }
-//     else if (strcmp(type, "CHANGE_PASSWORD") == 0) {
-//         handleChangePassword(connfd, conn, h);
-//     }
-// }
+void handleShowRoomsByCinema(MYSQL *conn, int connfd, char *cinema_id);
+void handleShowShowtimesByRoom(MYSQL *conn, int connfd, char *room_id);
+void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, char *room_id, char *start_datetime);
+
+void handleViewTickets(MYSQL *conn, int connfd, char *username);
+void handleViewTicketDetail(MYSQL *conn, int connfd, char *ticket_id);
+
 
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password){
     int check = checkLogin(*h, &username, password, arr);
@@ -142,27 +135,6 @@ void handleChangePassword( int connfd, MYSQL *conn, node *h){
         sendResult(connfd, CHANGE_PASSWORD_FAIL);
     }
 }
-
-/*----------ADD FILM--------*/
-// void handleAddNewFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time, char *description) {
-//     char query[1024];
-//     snprintf(query, sizeof(query),
-//         "INSERT INTO films (title, category_id, show_time, description) "
-//         "VALUES ('%s', %s, %s, '%s')",
-//         title, category_id, show_time, description);
-//     if (mysql_query(conn, query) != 0) {
-//         sendResult(connfd, ADD_FILM_FAIL);
-//         return;
-//     }
-
-//     sendResult(connfd, ADD_FILM_SUCCESS);
-// }
-/*----------END ADD FILM--------*/
-
-
-
-
-
 
 /*----------FIND FILM--------*/
 void handleSearchFilmByTitle(MYSQL *conn, int connfd, char *title) {
@@ -551,7 +523,7 @@ void handleShowSeat(MYSQL *conn, int connfd) {
 
 
     sprintf(query,
-        "SELECT s.id, s.seat_number, s.row_name "
+        "SELECT s.id, s.row_name, s.seat_number "
         "FROM seats s "
         "WHERE s.room_id = ("
         "   SELECT room_id FROM showtimes WHERE id = %s"
@@ -580,7 +552,7 @@ void handleShowSeat(MYSQL *conn, int connfd) {
     MYSQL_ROW row;
     while((row = mysql_fetch_row(res))){
         char line[128];
-        snprintf(line, sizeof(line), "SEAT|%s|%s%s", row[0], row[1], row[2]);
+        snprintf(line, sizeof(line), "SEAT|%s|%s-%s", row[0], row[1], row[2]);
         sendMessage(connfd, line);
     }
 
@@ -622,11 +594,117 @@ void handleBookTicket(
 
 /*----------END BOOK TICKET--------*/
 
+void handleViewTickets(MYSQL *conn, int connfd, char *username) {
+    char query[1024];
+    char message[2048];
+
+    sprintf(query, 
+        "SELECT t.id, f.title, c.name, r.name, "
+        "CONCAT(s.row_name, '-', s.seat_number) as seat, "
+        "st.start_time, st.end_time, t.booked_at "
+        "FROM tickets t "
+        "JOIN users u ON t.user_id = u.id "
+        "JOIN showtimes st ON t.showtime_id = st.id "
+        "JOIN films f ON st.film_id = f.id "
+        "JOIN rooms r ON st.room_id = r.id "
+        "JOIN cinemas c ON r.cinema_id = c.id "
+        "JOIN seats s ON t.seat_id = s.id "
+        "WHERE u.username = '%s' "
+        "ORDER BY st.start_time DESC", username);
+    
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        MYSQL_ROW row;
+        
+        if (mysql_num_rows(result) == 0) {
+            sprintf(message, "No tickets found.");
+            sendMessage(connfd, message);
+        } else {
+            sprintf(message, "%-5s | %-20s | %-20s | %-10s | %-5s | %-20s | %-20s", 
+                    "ID", "Film", "Cinema", "Room", "Seat", "Start Time", "Booked At");
+            sendMessage(connfd, message);
+            while ((row = mysql_fetch_row(result))) {
+                sprintf(message, "%-5s | %-20s | %-20s | %-10s | %-5s | %-20s | %-20s", 
+                        row[0], row[1], row[2], row[3], row[4], row[5], row[7]);
+                sendMessage(connfd, message);
+            }
+            
+            sprintf(message, "\nYou has total: %lu ticket(s)", mysql_num_rows(result));
+            sendMessage(connfd, message);
+        }
+        mysql_free_result(result);
+    } else {
+        sprintf(message, "Failed to retrieve tickets.");
+        sendMessage(connfd, message);
+    }
+    
+    sendMessage(connfd, "END");
+}
+void handleViewTicketDetail(MYSQL *conn, int connfd, char *ticket_id) {
+
+     char query[1024];
+    char message[2048];
+    
+    sprintf(query,
+            "SELECT u.name, u.username, f.title, c.name, c.address, "
+            "r.name, r.total_seats, CONCAT(s.row_name, s.seat_number) as seat, "
+            "st.start_time, st.end_time, t.booked_at, "
+            "TIMESTAMPDIFF(HOUR, NOW(), st.start_time) as hours_until "
+            "FROM tickets t "
+            "JOIN users u ON t.user_id = u.id "
+            "JOIN showtimes st ON t.showtime_id = st.id "
+            "JOIN films f ON st.film_id = f.id "
+            "JOIN rooms r ON st.room_id = r.id "
+            "JOIN cinemas c ON r.cinema_id = c.id "
+            "JOIN seats s ON t.seat_id = s.id "
+            "WHERE t.id = %s",
+            ticket_id);
+    
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        
+        if (mysql_num_rows(result) == 0) {
+            sprintf(message, "Ticket not found!");
+            sendMessage(connfd, message);
+        } else {
+            MYSQL_ROW row = mysql_fetch_row(result);
+            
+            sprintf(message, "\n=== TICKET DETAIL ===\n");
+            sendMessage(connfd, message);
+            
+            sprintf(message, "Customer: %s (%s)", row[0], row[1]);
+            sendMessage(connfd, message);
+            
+            sprintf(message, "\nFilm: %s", row[2]);
+            sendMessage(connfd, message);
+            
+            sprintf(message, "\nCinema: %s | Address: %s", row[3], row[4]);
+            sendMessage(connfd, message);
+            
+            sprintf(message, "\nRoom: %s | Capacity: %s seats |  Seat: %s", row[5], row[6], row[7]);
+            sendMessage(connfd, message);
+            
+            sprintf(message, "\nShowtime: %s - %s", row[8], row[9]);
+            sendMessage(connfd, message);
+            
+            sprintf(message, "\nBooked at: %s", row[10]);
+            sendMessage(connfd, message);
+        }
+        mysql_free_result(result);
+    }
+
+    sendMessage(connfd, "END");
+}
+
+
+
+/*----------MANAGER--------*/
+
 /*-----ADD FILM-----*/
 void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time) {
+    char response[1024];
     char query[2048];
-    
-    printf("[DEBUG] ADD_FILM params - title: %s, category_id: %s, show_time: %s\n", title, category_id, show_time);
+
 
     // 1. Check if film already exists
     sprintf(query, 
@@ -677,6 +755,235 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
 }
 
 /*-----END ADD FILM-----*/
+
+/*-----ADD SHOW TIME-----*/
+
+void handleShowRoomsByCinema(MYSQL *conn, int connfd, char *cinema_id) {
+    char query[512];
+    char message[1024];
+
+    // Check if cinema exists
+    sprintf(query, "SELECT COUNT(*) FROM cinemas WHERE id = %s", cinema_id);
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        MYSQL_ROW row = mysql_fetch_row(result);
+        if (row && atoi(row[0]) == 0) {
+            mysql_free_result(result);
+            sprintf(message, "ERROR: Invalid cinema ID!");
+            sendMessage(connfd, message);
+            sendMessage(connfd, "END");
+            return;
+        }
+        mysql_free_result(result);
+    }
+
+    // Show rooms in the cinema
+    sprintf(query, 
+        "SELECT r.id, r.name, r.total_seats "
+        "FROM rooms r " 
+        "WHERE r.cinema_id = %s AND r.status = 'ACTIVE' "
+        "ORDER BY r.id",
+        cinema_id);
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+    
+        if (mysql_num_rows(result) == 0) {
+            sprintf(message, "No rooms available in this cinema.");
+            sendMessage(connfd, message);
+        } else {
+            MYSQL_ROW row;
+            while ((row = mysql_fetch_row(result))) {
+                sprintf(message, "ID: %s | %s | %s seats", 
+                        row[0], row[1], row[2]);
+                sendMessage(connfd, message);
+            }
+        }
+        mysql_free_result(result);
+    }
+    else {
+        sprintf(message, "Failed to retrieve rooms.");
+        sendMessage(connfd, message);
+    }
+
+    sendMessage(connfd, "END");
+}
+
+void handleShowShowtimesByRoom(MYSQL *conn, int connfd, char *room_id) {
+    char query[512];
+    char message[1024];
+
+    sprintf(query,
+        "SELECT s.id, f.title, s.start_time, s.end-time, "
+        "TIMESTAMPDIFF(MINUTE, s.start_time, s.end_time) AS duration "
+        "FROM showtimes s "
+        "JOIN films f ON s.film_id = f.id "
+        "WHERE s.room_id = %s "
+        "AND DATE(s.start_time) >= CURDATE() "
+        "ORDER BY s.start_time", room_id);
+
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+
+        if (mysql_num_rows(result) == 0) {
+            memset(message, 0, sizeof(message));
+            sprintf(message, "No showtimes availale in this room.");
+            sendMessage(connfd, message);
+        }
+        else {
+            MYSQL_ROW row;
+            while ((row = mysql_fetch_row(result))) {
+                memset(message, 0, sizeof(message));
+                sprintf(message, "ID: %s | Title: %s | %s - %s (%s minutes)", row[0], row[1], row[2], row[3], row[4]);
+                sendMessage(connfd, message);
+            }
+        }
+        mysql_free_result(result);
+    }
+    sendMessage(connfd, "END");
+}
+void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, char *room_id, char *start_datetime) {
+    char query[1024];
+    char response[1024];
+    char end_datetime[50];
+    int duration;
+
+    // 1. Check if film exists and get duration
+    sprintf(query, "SELECT show_time FROM films WHERE id = %s", film_id);
+    memset(response, 0, sizeof(response));
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        if (mysql_num_rows(result) == 0) {
+            mysql_free_result(result);
+            sprintf(response, "Invalid film ID");
+            sendMessage(connfd, response);
+            return;
+        }
+        MYSQL_ROW row = mysql_fetch_row(result);
+        duration = atoi(row[0]);
+        mysql_free_result(result);
+    }
+    else {
+        sprintf(response, "Database query error");
+        sendMessage(connfd, response);
+        return;
+    }
+
+    // 2. Check if cinema exist
+    sprintf(query, "SELECT COUNT(*) FROM cinemas WHERE id = %s", cinema_id);
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        MYSQL_ROW row = mysql_fetch_row(result);
+        if (row && atoi(row[0]) == 0) {
+            mysql_free_result(result);
+            memset(response, 0, sizeof(response));
+            sprintf(response, "Invalid cinema ID");
+            sendMessage(connfd, response);
+            return;
+        }
+        mysql_free_result(result);
+    }
+    
+    // 3. Check if room exits, activate anđ belongs to selected cinema
+    sprintf(query, "SELECT cinema_id FROM rooms WHERE id = %s AND status = 'ACTIVE'", room_id);
+    int room_cinema_id = 0;
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        if (mysql_num_rows(result) == 0) {
+            mysql_free_result(result);
+            memset(response, 0, sizeof(response));
+            sprintf(response, "Invalid room ID or room is not active");
+            sendMessage(connfd, response);
+            return;
+        }
+        MYSQL_ROW row = mysql_fetch_row(result);
+        room_cinema_id = atoi(row[0]);
+        mysql_free_result(result);
+
+        if (room_cinema_id != atoi(cinema_id)) {
+            memset(response, 0, sizeof(response));
+            sprintf(response, "Room does not belong to the selected cinema");
+            sendMessage(connfd, response);
+            return;
+        }
+    }
+
+    // 4. Calculate end_datetime
+    sprintf(query, "SELECT DATE_ADD('%s', INTERVAL %d MINUTE)", start_datetime, duration);
+
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        MYSQL_ROW row = mysql_fetch_row(result);
+        strcpy(end_datetime, row[0]);
+        mysql_free_result(result);
+    } 
+    else {
+        memset(response, 0, sizeof(response));
+        sprintf(response, "Invalid start datetime format");
+        sendMessage(connfd, response);
+        return;
+    }
+
+    // 5. Check for scheduling conflicts (overlapping showtimes in the same room 15 minutes buffer)
+    // Movie A
+    // Movie B     
+    // Movie A ends -- 15 minutes -- Movie C starts -- duration -- Movie C ends -- 15 minutes -- Movie B starts 
+    sprintf(query, 
+        "SELECT COUNT(*) FROM showtimes "
+        "WHERE room_id = %s "
+        "AND NOT (end_time <= DATE_SUB('%s', INTERVAL 15 MINUTE) OR start_time >= DATE_ADD('%s', INTERVAL 15 MINUTE))", 
+        room_id, start_datetime, end_datetime);
+    
+    if (mysql_query(conn, query) == 0) {
+        MYSQL_RES *result = mysql_store_result(conn);
+        MYSQL_ROW row = mysql_fetch_row(result);    
+        if (row && atoi(row[0]) > 0) {
+            mysql_free_result(result);
+            memset(response, 0, sizeof(response));
+            sprintf(response, "Has scheduling conflict in the selected room");
+            sendMessage(connfd, response);
+            return;
+        }
+        mysql_free_result(result);
+    }
+
+    // 6. insert new showtime
+    sprintf(query, "INSERT INTO showtimes (film_id, room_id, start_time, end_time) VALUES (%s, %s, '%s', '%s')",
+            film_id, room_id, start_datetime, end_datetime);
+    if (mysql_query(conn, query) == 0) {
+        int showtime_id = mysql_insert_id(conn);
+        sprintf(query, 
+            "SELECT c.name, r.name FROM cinemas c "
+            "JOIN rooms r ON r.cinema_id = c.id "
+            "WHERE c.id = %s AND r.id = %s",
+            cinema_id, room_id);
+        char cinema_name[255] = "empty";
+        char room_name[255] = "empty";
+        if (mysql_query(conn, query) == 0) {
+            MYSQL_RES *result = mysql_store_result(conn);
+            if (mysql_num_rows(result) > 0) {
+                MYSQL_ROW row = mysql_fetch_row(result);
+                strcpy(cinema_name, row[0]);
+                strcpy(room_name, row[1]);
+            }
+            mysql_free_result(result);
+        }
+        sprintf(response, "Showtime added successfully!");
+        sendMessage(connfd, response);
+        printf("[LOG] Added showtime (ID: %d) for film %s at %s - %s - %s\n", 
+               showtime_id, film_id, cinema_name, room_name, start_datetime);
+    }
+    else {
+        sprintf(response, "Failed to add showtime!");
+        sendMessage(connfd, response);
+        printf("[ERROR] Failed to add showtime: %s\n", mysql_error(conn));
+    }
+}
+
+/*-----END ADD SHOW TIME-----*/
+
+
+/*----------END MANAGER--------*/
+
 /*----------ADMIN MANAGEMENT--------*/
 
 void handleShowAllUsers(MYSQL *conn, int connfd) {

@@ -35,6 +35,13 @@ void handleBrowseShowTime(MYSQL *conn, int connfd, char *premiered_time_id);
 
 void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char *show_time);
 
+void handleShowRoomsByCinema(MYSQL *conn, int connfd, char *cinema_id);
+void handleShowShowtimesByRoom(MYSQL *conn, int connfd, char *room_id);
+void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, char *room_id, char *start_datetime);
+
+void handleViewTickets(MYSQL *conn, int connfd, char *username);
+void handleViewTicketDetail(MYSQL *conn, int connfd, char *ticket_id);
+
 void handleShowAllUsers(MYSQL *conn, int connfd);
 void handleDeleteUser(MYSQL *conn, int connfd);
 void handleChangeUserRole(MYSQL *conn, int connfd);
