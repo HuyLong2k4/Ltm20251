@@ -25,9 +25,11 @@
 #define REGISTER_FAIL 2021
 #define LOGOUT_SUCCESS 1030
 
-// --- KHAI BÁO MUTEX ĐỂ KHÓA DATABASE ---
+// --- KHAI BÁO MUTEX ĐỂ BẢO VỆ SHARED RESOURCES ---
 pthread_mutex_t db_lock = PTHREAD_MUTEX_INITIALIZER;
-// MYSQL *conn;
+pthread_mutex_t arr_lock = PTHREAD_MUTEX_INITIALIZER;  // Protect logged users list
+pthread_mutex_t head_lock = PTHREAD_MUTEX_INITIALIZER; // Protect user linked list
+
 listLoginedAccount arr;
 node head = NULL;
 
