@@ -25,6 +25,13 @@ void handleBookTicket(int sockfd);
 
 /*----------END BOOK TICKET--------*/
 
+/*----------VIEW TICKET--------*/
+
+void handleViewTickets(int sockfd, char *username);
+void handleViewTicketDetail(int sockfd);
+
+/*----------END VIEW TICKET--------*/
+
 
 /*----------FIND FILM--------*/
 
@@ -57,6 +64,13 @@ void handleChangeUserRole(int sockfd);
 void handleRequestAdmin(int sockfd, char *username, char *message);
 
 /*----------END ADMIN MANAGEMENT--------*/
+
+/*----------MANAGER--------*/
+
+void handleRequestManager(int sockfd, char *username, char *message);
+void handleAddShowTime(int sockfd);
+
+/*----------END MANAGER--------*/
 
 
 

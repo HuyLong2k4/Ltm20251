@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define BUFSIZE 255
+#define BUFSIZE 4096
 
 // fd là số hiệu đường ống mà send hoặc recv gửi vào
 
@@ -21,7 +21,12 @@ void recvMessage(int fd, char *message){
     char buffer[BUFSIZE];
     memset(&buffer, 0, BUFSIZE);
     recv(fd, &length, sizeof(length), 0);
-    recv(fd, buffer, ntohl(length), 0);
+    int msg_len = ntohl(length);
+    if (msg_len >= BUFSIZE) {
+        msg_len = BUFSIZE - 1; // Prevent overflow
+    }
+    recv(fd, buffer, msg_len, 0);
+    buffer[msg_len] = '\0'; // Ensure null termination
     strcpy(message, buffer);
 }
 

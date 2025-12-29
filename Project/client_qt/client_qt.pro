@@ -22,6 +22,7 @@ SOURCES += \
     bookticketdialog.cpp \
     admindialog.cpp \
     managerdialog.cpp \
+    addshowtimedialog.cpp \
     ../lib/socket/socket.c \
     ../lib/messages/message.c
 
@@ -35,6 +36,7 @@ HEADERS += \
     bookticketdialog.h \
     admindialog.h \
     managerdialog.h \
+    addshowtimedialog.h \
     ../lib/socket/socket.h \
     ../lib/messages/message.h \
     ../client/headers/menu.h \

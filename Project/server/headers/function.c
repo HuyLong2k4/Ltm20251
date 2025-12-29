@@ -839,7 +839,7 @@ void handleShowShowtimesByRoom(MYSQL *conn, int connfd, char *room_id) {
     char message[1024];
 
     sprintf(query,
-        "SELECT s.id, f.title, s.start_time, s.end-time, "
+        "SELECT s.id, f.title, s.start_time, s.end_time, "
         "TIMESTAMPDIFF(MINUTE, s.start_time, s.end_time) AS duration "
         "FROM showtimes s "
         "JOIN films f ON s.film_id = f.id "
@@ -852,7 +852,7 @@ void handleShowShowtimesByRoom(MYSQL *conn, int connfd, char *room_id) {
 
         if (mysql_num_rows(result) == 0) {
             memset(message, 0, sizeof(message));
-            sprintf(message, "No showtimes availale in this room.");
+            sprintf(message, "No showtimes available in this room.");
             sendMessage(connfd, message);
         }
         else {
@@ -873,23 +873,30 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
     char end_datetime[50];
     int duration;
 
+    printf("[DEBUG] ADD_SHOWTIME: film_id=%s, cinema_id=%s, room_id=%s, start_datetime=%s\n", 
+           film_id, cinema_id, room_id, start_datetime);
+
     // 1. Check if film exists and get duration
     sprintf(query, "SELECT show_time FROM films WHERE id = %s", film_id);
     memset(response, 0, sizeof(response));
+    printf("[DEBUG] Query: %s\n", query);
     if (mysql_query(conn, query) == 0) {
         MYSQL_RES *result = mysql_store_result(conn);
         if (mysql_num_rows(result) == 0) {
             mysql_free_result(result);
             sprintf(response, "Invalid film ID");
+            printf("[ERROR] %s\n", response);
             sendMessage(connfd, response);
             return;
         }
         MYSQL_ROW row = mysql_fetch_row(result);
         duration = atoi(row[0]);
+        printf("[DEBUG] Film duration: %d minutes\n", duration);
         mysql_free_result(result);
     }
     else {
-        sprintf(response, "Database query error");
+        sprintf(response, "Database query error: %s", mysql_error(conn));
+        printf("[ERROR] %s\n", response);
         sendMessage(connfd, response);
         return;
     }
@@ -999,7 +1006,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
                showtime_id, film_id, cinema_name, room_name, start_datetime);
     }
     else {
-        sprintf(response, "Failed to add showtime!");
+        sprintf(response, "Failed to add showtime: %s", mysql_error(conn));
         sendMessage(connfd, response);
         printf("[ERROR] Failed to add showtime: %s\n", mysql_error(conn));
     }

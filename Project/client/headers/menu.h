@@ -115,6 +115,10 @@ void bookTicket();
 
 void getInput(const char *prompt, char *out, int max_len);
 
+/*----------VIEW TICKET--------*/
+void viewTicket();
+/*----------END VIEW TICKET--------*/
+
 void getFilmID(char *film_id);
 
 
