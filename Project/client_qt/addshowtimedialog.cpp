@@ -8,7 +8,7 @@ extern "C" {
 AddShowTimeDialog::AddShowTimeDialog(int sockfd, QWidget *parent)
     : QDialog(parent), sockfd(sockfd)
 {
-    setWindowTitle("Add Show Time - HTV-SPM");
+    setWindowTitle("Add Show Time - MovieGo");
     setModal(true);
     setMinimumSize(900, 700);
     

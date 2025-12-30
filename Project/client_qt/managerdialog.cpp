@@ -11,7 +11,7 @@ extern "C" {
 ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *parent)
     : QDialog(parent), sockfd(sockfd), username(username)
 {
-    setWindowTitle("Manager Panel - HTV-SPM");
+    setWindowTitle("Manager Panel - MovieGo");
     setModal(true);
     setMinimumSize(500, 400);
     

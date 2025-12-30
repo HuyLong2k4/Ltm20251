@@ -41,20 +41,6 @@ int main(int argc, char **argv){
         exit(1);
     }
 
-    //  // Test connection một lần lúc khởi động
-    // MYSQL *test_conn;
-    // connectDatabase(&test_conn);
-    // if(test_conn == NULL){
-    //     printf("Cannot connect to database\n");
-    //     exit(1);
-    // }
-    // printf("Database connection test successful\n");
-    // mysql_close(test_conn); // Đóng ngay sau khi test
-
-    // // Initialize the logged-in accounts list and user list
-    // arr = createListLoginedAccount(); 
-    // selectUser(conn, &head, (user){0}); // head -> linked list save the user info from the users table in database
-
      // Khởi tạo và test DB connection
     MYSQL *init_conn;
     connectDatabase(&init_conn);
@@ -204,7 +190,9 @@ void *handleCommunicate(void* arg) {
             char *reg_username = strtok(NULL, "\r\n");
             char *reg_password = strtok(NULL, "\r\n");
             if(name && reg_username && reg_password) {
-                handleRegister(conn, connfd, &head);
+                handleRegister(conn, connfd, &head, name, reg_username, reg_password);
+            } else {
+                sendResult(connfd, REGISTER_FAIL);
             }
             
         } else if(strcmp(cmd, "LOGOUT") == 0){

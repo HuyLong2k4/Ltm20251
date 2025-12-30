@@ -10,7 +10,7 @@
 
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password);
 
-void handleRegister(MYSQL *conn, int connfd, node *h);
+void handleRegister(MYSQL *conn, int connfd, node *h, char *name, char *username, char *password);
 
 void handleChangePassword(int connfd, MYSQL *conn, node* h);
 

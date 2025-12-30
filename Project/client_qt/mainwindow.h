@@ -19,6 +19,7 @@ class ChangePasswordDialog;
 class BrowseFilmDialog;
 class SearchFilmDialog;
 class BookTicketDialog;
+class ViewTicketsDialog;
 class AdminDialog;
 class ManagerDialog;
 
@@ -43,6 +44,7 @@ private slots:
     void onBrowseFilmClicked();
     void onSearchFilmClicked();
     void onBookTicketClicked();
+    void onViewTicketsClicked();
 
 private:
     QStackedWidget *stackedWidget;
@@ -57,6 +59,7 @@ private:
     QPushButton *changePasswordBtn;
     QPushButton *browseFilmBtn;
     QPushButton *searchFilmBtn;
+    QPushButton *viewTicketsBtn;
     QPushButton *bookTicketBtn;
     
     QLabel *userLabel;

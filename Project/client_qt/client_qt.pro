@@ -20,6 +20,8 @@ SOURCES += \
     browsefilmdialog.cpp \
     searchfilmdialog.cpp \
     bookticketdialog.cpp \
+    viewticketsdialog.cpp \
+    viewticketdetaildialog.cpp \
     admindialog.cpp \
     managerdialog.cpp \
     addshowtimedialog.cpp \
@@ -34,6 +36,8 @@ HEADERS += \
     browsefilmdialog.h \
     searchfilmdialog.h \
     bookticketdialog.h \
+    viewticketsdialog.h \
+    viewticketdetaildialog.h \
     admindialog.h \
     managerdialog.h \
     addshowtimedialog.h \

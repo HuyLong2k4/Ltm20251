@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
                 break;
             }
             case 3: {
-                printf("\n\nThanks for coming to HTV-SPM!!\n\n");
+                printf("\n\nThanks for coming to MovieGo!!\n\n");
                 
                 sendMessage(sockfd, "EXIT");
                 

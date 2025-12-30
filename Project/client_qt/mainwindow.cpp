@@ -5,6 +5,7 @@
 #include "browsefilmdialog.h"
 #include "searchfilmdialog.h"
 #include "bookticketdialog.h"
+#include "viewticketsdialog.h"
 #include "admindialog.h"
 #include "managerdialog.h"
 #include <QVBoxLayout>
@@ -18,7 +19,7 @@ extern "C" {
 MainWindow::MainWindow(int sockfd, QWidget *parent)
     : QMainWindow(parent), sockfd(sockfd), isLoggedIn(false)
 {
-    setWindowTitle("HTV-SPM Client");
+    setWindowTitle("MovieGo Client");
     setMinimumSize(500, 400);
     
     // Create stacked widget for different pages
@@ -29,7 +30,7 @@ MainWindow::MainWindow(int sockfd, QWidget *parent)
     welcomePage = new QWidget();
     QVBoxLayout *welcomeLayout = new QVBoxLayout(welcomePage);
     
-    QLabel *titleLabel = new QLabel("Welcome to HTV-SPM", welcomePage);
+    QLabel *titleLabel = new QLabel("Welcome to MovieGo", welcomePage);
     titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; margin: 20px;");
     titleLabel->setAlignment(Qt::AlignCenter);
     
@@ -60,7 +61,7 @@ MainWindow::MainWindow(int sockfd, QWidget *parent)
     userPage = new QWidget();
     QVBoxLayout *userLayout = new QVBoxLayout(userPage);
     
-    QLabel *userTitleLabel = new QLabel("HTV-SPM System", userPage);
+    QLabel *userTitleLabel = new QLabel("MovieGo System", userPage);
     userTitleLabel->setStyleSheet("font-size: 20px; font-weight: bold; margin: 20px;");
     userTitleLabel->setAlignment(Qt::AlignCenter);
     
@@ -71,12 +72,14 @@ MainWindow::MainWindow(int sockfd, QWidget *parent)
     browseFilmBtn = new QPushButton("Browse Film Catalogs", userPage);
     searchFilmBtn = new QPushButton("Search Film", userPage);
     bookTicketBtn = new QPushButton("Book Ticket", userPage);
+    viewTicketsBtn = new QPushButton("View My Tickets", userPage);
     changePasswordBtn = new QPushButton("Change Password", userPage);
     logoutBtn = new QPushButton("Logout", userPage);
     
     browseFilmBtn->setMinimumHeight(40);
     searchFilmBtn->setMinimumHeight(40);
     bookTicketBtn->setMinimumHeight(40);
+    viewTicketsBtn->setMinimumHeight(40);
     changePasswordBtn->setMinimumHeight(40);
     logoutBtn->setMinimumHeight(40);
     
@@ -86,6 +89,7 @@ MainWindow::MainWindow(int sockfd, QWidget *parent)
     userLayout->addWidget(browseFilmBtn);
     userLayout->addWidget(searchFilmBtn);
     userLayout->addWidget(bookTicketBtn);
+    userLayout->addWidget(viewTicketsBtn);
     userLayout->addWidget(changePasswordBtn);
     userLayout->addWidget(logoutBtn);
     userLayout->addStretch();
@@ -106,6 +110,7 @@ MainWindow::MainWindow(int sockfd, QWidget *parent)
     connect(browseFilmBtn, &QPushButton::clicked, this, &MainWindow::onBrowseFilmClicked);
     connect(searchFilmBtn, &QPushButton::clicked, this, &MainWindow::onSearchFilmClicked);
     connect(bookTicketBtn, &QPushButton::clicked, this, &MainWindow::onBookTicketClicked);
+    connect(viewTicketsBtn, &QPushButton::clicked, this, &MainWindow::onViewTicketsClicked);
     
     // Show welcome page
     showWelcomeScreen();
@@ -217,5 +222,11 @@ void MainWindow::onSearchFilmClicked()
 void MainWindow::onBookTicketClicked()
 {
     BookTicketDialog dialog(sockfd, this);
+    dialog.exec();
+}
+
+void MainWindow::onViewTicketsClicked()
+{
+    ViewTicketsDialog dialog(sockfd, currentUsername, this);
     dialog.exec();
 }

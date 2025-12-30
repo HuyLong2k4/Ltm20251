@@ -32,7 +32,7 @@ void viewRegister(char *name, char *username, char *password) {
 }
 
 void viewUser(){
-    printf("--------------Welcome to HTV-SPM------------------\n\n");
+    printf("--------------Welcome to MovieGo------------------\n\n");
     printf("1. Browse films\n");
     printf("2. Search film \n");
     printf("3. Book ticket\n");
@@ -134,7 +134,7 @@ void getPremieredTimeID(char *time_id) {
 
 /*----------BOOK TICKET--------*/
 void bookTicket(){
-    printf("--------------Welcome to HTV-SPM------------------\n\n");
+    printf("--------------Welcome to MovieGo------------------\n\n");
     printf("1. Book Ticket\n");
     printf("2. Return\n\n");
     printf("---------------------------------------------------\n");

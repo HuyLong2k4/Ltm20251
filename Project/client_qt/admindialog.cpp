@@ -12,7 +12,7 @@ extern "C" {
 AdminDialog::AdminDialog(int sockfd, const QString &username, QWidget *parent)
     : QDialog(parent), sockfd(sockfd), username(username)
 {
-    setWindowTitle("Admin Panel - HTV-SPM");
+    setWindowTitle("Admin Panel - MovieGo");
     setModal(true);
     setMinimumSize(800, 600);
     

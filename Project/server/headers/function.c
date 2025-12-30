@@ -49,7 +49,7 @@
 // void handleRequest( MYSQL *conn, char *type, int connfd, char *username, char *password, listLoginedAccount *arr, node *h);
 void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, char *password);
 void handleLogout( int connfd, listLoginedAccount *arr, char *username);
-void handleRegister( MYSQL *conn, int connfd, node *h);
+void handleRegister(MYSQL *conn, int connfd, node *h, char *name, char *username, char *password);
 void handleChangePassword( int connfd, MYSQL *conn, node *h);
 
 void handleShowRoomsByCinema(MYSQL *conn, int connfd, char *cinema_id);
@@ -116,17 +116,19 @@ void handleLogout(int connfd, listLoginedAccount *arr, char *username){
     sendResult(connfd, LOGOUT_SUCCESS);
 }
 
-void handleRegister(MYSQL *conn, int connfd, node *h){
-    char name[255] = {0};
-    char username[255] = {0};
-    char password[255] = {0};
-
-    getRegisterMessage(name, username, password);
+void handleRegister(MYSQL *conn, int connfd, node *h, char *name, char *username, char *password){
+    printf("[DEBUG] Register - name: '%s', username: '%s', password: '%s'\n", name, username, password);
 
     user newUser;
     strncpy(newUser.name, name, sizeof(newUser.name) - 1);
+    newUser.name[sizeof(newUser.name) - 1] = '\0';
+    
     strncpy(newUser.username, username, sizeof(newUser.username) - 1);
+    newUser.username[sizeof(newUser.username) - 1] = '\0';
+    
     strncpy(newUser.password, password, sizeof(newUser.password) - 1);
+    newUser.password[sizeof(newUser.password) - 1] = '\0';
+    
     newUser.role_id = 2;
 
     int result = registerUser(conn, newUser);

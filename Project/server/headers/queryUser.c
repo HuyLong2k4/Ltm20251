@@ -116,11 +116,18 @@ int checkLogin(node head, char **username, char *password, listLoginedAccount *a
 int registerUser(MYSQL *connection, user newUser) {
     char query[1024];
 
+    // Validate input
+    if (strlen(newUser.username) == 0 || strlen(newUser.name) == 0 || strlen(newUser.password) == 0) {
+        printf("Registration failed: Empty fields\n");
+        return 0;
+    }
+
     sprintf(query, "SELECT username FROM users WHERE username = '%s'", newUser.username);
     mysql_query(connection, query);
     MYSQL_RES *result = mysql_store_result(connection);
     if (mysql_num_rows(result) > 0) {
         mysql_free_result(result);
+        printf("Registration failed: Username '%s' already exists\n", newUser.username);
         return 0;
     }
     mysql_free_result(result);
@@ -130,6 +137,7 @@ int registerUser(MYSQL *connection, user newUser) {
         fprintf(stderr, "Register Error: %s\n", mysql_error(connection));
         return 0;
     } else {
+        printf("Registration successful: User '%s' created\n", newUser.username);
         return 1;
     }
 }
