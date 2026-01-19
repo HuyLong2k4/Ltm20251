@@ -33,6 +33,10 @@ pthread_mutex_t head_lock = PTHREAD_MUTEX_INITIALIZER; // Protect user linked li
 listLoginedAccount arr;
 node head = NULL;
 
+
+
+
+
 void *handleCommunicate(void *);
 
 int main(int argc, char **argv){
@@ -54,8 +58,13 @@ int main(int argc, char **argv){
     initLogger();
     
     // Khởi tạo lists
+    // Khởi tạo users
     arr = createListLoginedAccount(); 
     selectUser(init_conn, &head, (user){0});
+
+    // *** THÊM DÒNG NÀY: Khởi tạo cache ***
+    initCache(init_conn);
+
     mysql_close(init_conn); // Đóng sau khi init xong
 
     int listenfd, *connfd;
@@ -94,6 +103,7 @@ int main(int argc, char **argv){
 
     printf("Server is listening on port %s...\n", argv[1]);
     client = malloc(sin_size);
+
 
     while (1) {
         connfd = malloc(sizeof(int));

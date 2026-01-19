@@ -22,6 +22,8 @@ INSERT INTO rooms (name, cinema_id, total_seats, status) VALUES
 
 -- Seats cho Room 1 (100 ghế)
 INSERT INTO seats (room_id, seat_number, row_name) VALUES
+
+
 -- Row A (10 seats)
 (1, 'A1', 'A'), (1, 'A2', 'A'), (1, 'A3', 'A'), (1, 'A4', 'A'), (1, 'A5', 'A'),
 (1, 'A6', 'A'), (1, 'A7', 'A'), (1, 'A8', 'A'), (1, 'A9', 'A'), (1, 'A10', 'A'),
