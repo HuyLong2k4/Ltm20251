@@ -14,68 +14,6 @@ void clearKeyboardBuffer() {
     }
 }
 
-void handleLogout(int sockfd, char *message);
-void handleRegister(int sockfd, char *message);
-void handleChangePassword(int sockfd, char *username, char *message);
-
-
-/*----------BOOK TICKET--------*/
-
-void handleBookTicket(int sockfd);
-
-/*----------END BOOK TICKET--------*/
-
-/*----------VIEW TICKET--------*/
-
-void handleViewTickets(int sockfd, char *username);
-void handleViewTicketDetail(int sockfd);
-
-/*----------END VIEW TICKET--------*/
-
-
-/*----------FIND FILM--------*/
-
-void handleSearchByTitle(int sockfd);
-
-/*----------END FIND FILM--------*/
-
-
-/*----------ADD FILM--------*/
-
-void handleAddFilm(int sockfd);
-
-/*----------END ADD FILM--------*/
-
-
-/*----------BROWSE FILM--------*/
-
-void handleBrowseFollowCategory(int sockfd);
-void handleBrowseFollowCinema(int sockfd);
-void handleBrowseFollowShowTime(int sockfd);
-void handleBrowseFilm(int sockfd);
-
-/*----------END BROWSE FILM--------*/
-
-/*----------ADMIN MANAGEMENT--------*/
-
-void handleShowAllUsers(int sockfd);
-void handleDeleteUser(int sockfd);
-void handleChangeUserRole(int sockfd);
-void handleRequestAdmin(int sockfd, char *username, char *message);
-
-/*----------END ADMIN MANAGEMENT--------*/
-
-/*----------MANAGER--------*/
-
-void handleRequestManager(int sockfd, char *username, char *message);
-void handleAddShowTime(int sockfd);
-
-/*----------END MANAGER--------*/
-
-
-
-
-
 void handleLogin(int sockfd, char *username, char *password, char *message, int *login_status){
     viewLogin(username, password);
     makeLoginMessage(username, password, message);
