@@ -122,7 +122,6 @@ void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, c
         sendResult(connfd, LOGIN_SUCCESS_USER);
     }
     else if (check == 3) {
-        // Already logged in
         pthread_mutex_unlock(&head_lock);
         pthread_mutex_unlock(&arr_lock);
         sendResult(connfd, LOGIN_ALREADY);
@@ -250,7 +249,6 @@ void handleShowCategory(MYSQL *conn, int connfd){
         return;
     }
     
-    // Gửi từng dòng, không ghép hết vào 1 message
     MYSQL_ROW row;
     while((row = mysql_fetch_row(res))){
         snprintf(message, sizeof(message), "%s. %s", row[0], row[1]);
@@ -405,7 +403,6 @@ void handleBrowseShowTime(MYSQL *conn, int connfd, char *time_slot){
     char query[512];
     char message[1024];
 
-    // Tìm phim có suất chiếu trong khung giờ
     sprintf(query, 
         "SELECT DISTINCT f.id, f.title, c.name AS category, f.show_time "
         "FROM films f "
@@ -563,56 +560,6 @@ void handleShowTimeByFilmCinema(MYSQL *conn, int connfd) {
     mysql_free_result(res);
 }
 
-/* 
-    Only get seats in the room of that showtime
- */
-// void handleShowSeat(MYSQL *conn, int connfd) {
-//     char showtime_id[255] = {0};
-//     char query[1024];
-//     char message[2048];
-
-//     char *tmp = strtok(NULL, "\r\n");
-//     if(tmp) strcpy(showtime_id, tmp);
-
-
-//     sprintf(query,
-//         "SELECT s.id, s.row_name, s.seat_number "
-//         "FROM seats s "
-//         "WHERE s.room_id = ("
-//         "   SELECT room_id FROM showtimes WHERE id = %s"
-//         ") "
-//         "AND s.id NOT IN ("
-//         "   SELECT seat_id FROM tickets WHERE showtime_id = %s"
-//         ") "
-//         "ORDER BY s.row_name, s.seat_number", 
-//         showtime_id, showtime_id);
-
-//     if(mysql_query(conn, query) != 0){
-//         sendMessage(connfd, "Cant load the list of seats!");
-//         sendMessage(connfd, "END");
-//         return;
-//     }
-
-//     MYSQL_RES *res = mysql_store_result(conn);
-//     if(!res || mysql_num_rows(res) == 0){
-//         sendMessage(connfd, "No seats available!");
-//         sendMessage(connfd, "END");
-//         if(res) mysql_free_result(res);
-//         return;
-//     }
-
-//     strcpy(message, "=== Available Seats ===\n");
-//     MYSQL_ROW row;
-//     while((row = mysql_fetch_row(res))){
-//         char line[128];
-//         snprintf(line, sizeof(line), "SEAT|%s|%s-%s", row[0], row[1], row[2]);
-//         sendMessage(connfd, line);
-//     }
-
-//     // sendMessage(connfd, message);
-//     sendMessage(connfd, "END");
-//     mysql_free_result(res);
-// }
 
 void handleShowSeat(MYSQL *conn, int connfd) {
     char showtime_id_str[255] = {0};
@@ -622,25 +569,6 @@ void handleShowSeat(MYSQL *conn, int connfd) {
     if(!tmp) {
         sendMessage(connfd, "Invalid request");
         sendMessage(connfd, "END");
-
-//     if(tmp) strcpy(showtime_id, tmp);
-
-
-//     sprintf(query,
-//         "SELECT s.id, s.row_name, s.seat_number "
-//         "FROM seats s "
-//         "WHERE s.room_id = ("
-//         "   SELECT room_id FROM showtimes WHERE id = %s"
-//         ") "
-//         "AND s.id NOT IN ("
-//         "   SELECT seat_id FROM tickets WHERE showtime_id = %s"
-//         ") "
-//         "ORDER BY s.row_name, s.seat_number", 
-//         showtime_id, showtime_id);
-
-//     if(mysql_query(conn, query) != 0){
-//         sendMessage(connfd, MSG_CANT_LOAD_SEATS);
-//         sendMessage(connfd, MSG_END);
 
         return;
     }
