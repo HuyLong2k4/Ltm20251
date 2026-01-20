@@ -1,4 +1,5 @@
 #include "bookticketdialog.h"
+#include "responsecodes.h"
 #include <QVBoxLayout>
 #include <QMessageBox>
 
@@ -134,7 +135,18 @@ void BookTicketDialog::loadFilms()
     sprintf(message, "SHOW_FILMS\r\n");
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
     filmListWidget->clear();
+    
+    if (result != FIND_FILM_SUCCESS && result != NO_FILMS) {
+        QMessageBox::warning(this, "Error", "Failed to load films!");
+        return;
+    }
+    if (result == NO_FILMS) {
+        QMessageBox::information(this, "Info", "No films available!");
+        return;
+    }
+    
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
@@ -149,7 +161,18 @@ void BookTicketDialog::loadCinemas(const QString &filmId)
     sprintf(message, "SHOW_CINEMA_BY_FILM\r\n%s\r\n", filmId.toUtf8().constData());
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
     cinemaListWidget->clear();
+    
+    if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
+        QMessageBox::warning(this, "Error", "Failed to load cinemas!");
+        return;
+    }
+    if (result == NO_CINEMAS) {
+        QMessageBox::information(this, "Info", "No cinemas available for this film!");
+        return;
+    }
+    
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
@@ -166,7 +189,18 @@ void BookTicketDialog::loadShowtimes(const QString &filmId, const QString &cinem
             cinemaId.toUtf8().constData());
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
     showtimeListWidget->clear();
+    
+    if (result != BROWSE_TIME_SUCCESS && result != NO_SHOWTIMES) {
+        QMessageBox::warning(this, "Error", "Failed to load showtimes!");
+        return;
+    }
+    if (result == NO_SHOWTIMES) {
+        QMessageBox::information(this, "Info", "No showtimes available!");
+        return;
+    }
+    
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
@@ -181,7 +215,22 @@ void BookTicketDialog::loadSeats(const QString &showtimeId)
     sprintf(message, "SHOW_SEATS\r\n%s\r\n", showtimeId.toUtf8().constData());
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
     seatListWidget->clear();
+    
+    if (result == INVALID_REQUEST || result == INVALID_SHOWTIME) {
+        QMessageBox::warning(this, "Error", "Invalid showtime!");
+        return;
+    }
+    if (result == NO_SEATS_AVAILABLE) {
+        QMessageBox::information(this, "Info", "No seats available!");
+        return;
+    }
+    if (result != VIEW_CHAIR_SUCCESS) {
+        QMessageBox::warning(this, "Error", "Failed to load seats!");
+        return;
+    }
+    
     bool hasSeats = false;
     
     while (true) {

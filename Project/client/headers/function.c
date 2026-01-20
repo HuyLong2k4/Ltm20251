@@ -127,6 +127,16 @@ void handleBookTicket(int sockfd) {
                 sprintf(message, "SHOW_FILMS\r\n");
                 sendMessage(sockfd, message);
                 
+                int result = recvResult(sockfd);
+                if (result != FIND_FILM_SUCCESS && result != NO_FILMS) {
+                    printf("Error loading films!\n");
+                    break;
+                }
+                if (result == NO_FILMS) {
+                    printf("No films available!\n");
+                    break;
+                }
+                
                 while (1) {
                     recvMessage(sockfd, message);
                     if (strcmp(message, "END") == 0) break;
@@ -142,6 +152,16 @@ void handleBookTicket(int sockfd) {
                 memset(message, 0, sizeof(message));
                 sprintf(message, "SHOW_CINEMA_BY_FILM\r\n%s\r\n", film_id);
                 sendMessage(sockfd, message);
+                
+                result = recvResult(sockfd);
+                if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
+                    printf("Error loading cinemas!\n");
+                    break;
+                }
+                if (result == NO_CINEMAS) {
+                    printf("No cinemas available for this film!\n");
+                    break;
+                }
                 
                 while (1) {
                     recvMessage(sockfd, message);
@@ -160,6 +180,16 @@ void handleBookTicket(int sockfd) {
                         film_id, cinema_id);
                 sendMessage(sockfd, message);
                 
+                result = recvResult(sockfd);
+                if (result != BROWSE_TIME_SUCCESS && result != NO_SHOWTIMES) {
+                    printf("Error loading showtimes!\n");
+                    break;
+                }
+                if (result == NO_SHOWTIMES) {
+                    printf("No showtimes available!\n");
+                    break;
+                }
+                
                 while (1) {
                     recvMessage(sockfd, message);
                     if (strcmp(message, "END") == 0) break;
@@ -176,12 +206,25 @@ void handleBookTicket(int sockfd) {
                 sprintf(message, "SHOW_SEATS\r\n%s\r\n", showtime_id);
                 sendMessage(sockfd, message);
                 
+                result = recvResult(sockfd);
+                if (result == INVALID_REQUEST || result == INVALID_SHOWTIME) {
+                    printf("Invalid showtime!\n");
+                    break;
+                }
+                if (result == NO_SEATS_AVAILABLE) {
+                    printf("No seats available!\n");
+                    break;
+                }
+                if (result != VIEW_CHAIR_SUCCESS) {
+                    printf("Error loading seats!\n");
+                    break;
+                }
+                
                 int seat_available = 0;
 
                 while (1) {
                     recvMessage(sockfd, message);
                     if (strcmp(message, "END") == 0) break;
-                    printf("%s\n", message);
                     if (strncmp(message, "SEAT|", 5) == 0) {
                         seat_available = 1;
                         char *seat_id = strtok(message + 5, "|");
@@ -190,11 +233,9 @@ void handleBookTicket(int sockfd) {
                             printf("ID: %-4s  Seat: %s\n", seat_id, seat_name);
                         }
                     }
-                    else if (strncmp(message, "INFO|", 5) == 0) {
-                        printf("%s\n", message + 5);
-                    }
                 }
                 if (!seat_available) {
+                    printf("No seats available!\n");
                     break;
                 }
                 printf("Enter seat ID: ");
@@ -207,7 +248,7 @@ void handleBookTicket(int sockfd) {
                         showtime_id, seat_id);
                 sendMessage(sockfd, message);
 
-                int result = recvResult(sockfd);
+                result = recvResult(sockfd);
                 if (result == BOOK_TICKET_SUCCESS) {
                     printf("\nBOOK TICKET SUCCESS!\n");
                 }
@@ -272,6 +313,16 @@ void handleBrowseFollowCategory(int sockfd){
     sprintf(message, "SHOW_CATEGORIES\r\n");
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
+    if (result != SHOW_CATEGORY_SUCCESS && result != NO_CATEGORIES) {
+        printf("Error loading categories!\n");
+        return;
+    }
+    if (result == NO_CATEGORIES) {
+        printf("No categories available!\n");
+        return;
+    }
+    
     // Read until "END"
     while(1){
         memset(message, 0, sizeof(message));
@@ -288,7 +339,7 @@ void handleBrowseFollowCategory(int sockfd){
     makeBrowseFollowCategoryMessage(category_id, message);
     sendMessage(sockfd, message);
 
-    int result = recvResult(sockfd);
+    result = recvResult(sockfd);
     if(result == BROWSE_CATEGORY_SUCCESS){
         printf("\n=== FILM LIST ===\n");
         while(1){
@@ -313,6 +364,16 @@ void handleBrowseFollowCinema(int sockfd){
     sprintf(message, "SHOW_CINEMAS\r\n");
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
+    if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
+        printf("Error loading cinemas!\n");
+        return;
+    }
+    if (result == NO_CINEMAS) {
+        printf("No cinemas available!\n");
+        return;
+    }
+    
     // Read until "END"
     while(1){
         memset(message, 0, sizeof(message));
@@ -329,7 +390,7 @@ void handleBrowseFollowCinema(int sockfd){
     makeBrowseFollowCinemaMessage(cinema_id, message);
     sendMessage(sockfd, message);
 
-    int result = recvResult(sockfd);
+    result = recvResult(sockfd);
     if(result == BROWSE_THEATER_SUCCESS){
         printf("\n=== FILM LIST ===\n");
         while(1){
@@ -355,6 +416,16 @@ void handleBrowseFollowShowTime(int sockfd){
     sprintf(message, "SHOW_PREMIERED_TIME\r\n");
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
+    if (result != BROWSE_TIME_SUCCESS && result != NO_SHOWTIMES) {
+        printf("Error loading showtimes!\n");
+        return;
+    }
+    if (result == NO_SHOWTIMES) {
+        printf("No showtimes available!\n");
+        return;
+    }
+    
     // Read until "END"
     while(1){
         memset(message, 0, sizeof(message));
@@ -371,7 +442,7 @@ void handleBrowseFollowShowTime(int sockfd){
     makeBrowseFollowPremieredTimeMessage(time_slot, message);
     sendMessage(sockfd, message);
 
-    int result = recvResult(sockfd);
+    result = recvResult(sockfd);
     if(result == BROWSE_TIME_SUCCESS){
         printf("\n=== FILM LIST ===\n");
         while(1){
@@ -415,21 +486,26 @@ void handleViewTickets(int sockfd, char *username) {
     sprintf(message, "VIEW_TICKETS\r\n%s\r\n", username);
     sendMessage(sockfd, message);
 
-    int has_tickets = 0;
+    int result = recvResult(sockfd);
+    if (result == NO_TICKETS) {
+        printf("\nNo tickets found.\n");
+        return;
+    }
+    if (result == FAILED_RETRIEVE) {
+        printf("\nFailed to retrieve tickets.\n");
+        return;
+    }
+    if (result != VIEW_CHAIR_SUCCESS) {
+        printf("\nError loading tickets!\n");
+        return;
+    }
+
     while (1) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
         if (strcmp(message, "END") == 0) 
             break;
-        if (strstr(message, "No tickets") == NULL) {
-            has_tickets = 1;
-        }
-        has_tickets = 1;
         printf("%s\n", message);
-    }
-
-    if (!has_tickets) {
-        return;
     }
 
     int choice = 0;
@@ -469,6 +545,16 @@ void handleViewTicketDetail(int sockfd){
     memset(message, 0, sizeof(message));
     sprintf(message, "VIEW_TICKET_DETAIL\r\n%s\r\n", ticket_id);
     sendMessage(sockfd, message);
+    
+    int result = recvResult(sockfd);
+    if (result == TICKET_NOT_FOUND) {
+        printf("\nTicket not found!\n");
+        return;
+    }
+    if (result != VIEW_CHAIR_SUCCESS) {
+        printf("\nError loading ticket detail!\n");
+        return;
+    }
     
     // printf("\n--- Ticket Detail ---\n");
     while(1){
@@ -532,6 +618,16 @@ void handleAddFilm(int sockfd) {
     sprintf(message, "SHOW_CATEGORIES\r\n");
     sendMessage(sockfd, message);
 
+    int result = recvResult(sockfd);
+    if (result != SHOW_CATEGORY_SUCCESS && result != NO_CATEGORIES) {
+        printf("Error loading categories!\n");
+        return;
+    }
+    if (result == NO_CATEGORIES) {
+        printf("No categories available!\n");
+        return;
+    }
+
     printf("\nAvailable Categories: \n");
     while (1) {
         memset(message, 0, sizeof(message));
@@ -569,7 +665,7 @@ void handleAddFilm(int sockfd) {
     sendMessage(sockfd, message);
 
     // 4. Receive result from server
-    int result = recvResult(sockfd);
+    result = recvResult(sockfd);
     if (result == ADD_FILM_SUCCESS) {
         printf(ADD_FILM_SUCCESS_MESSAGE);
     } else if (result == FILM_EXISTS) {
@@ -596,6 +692,16 @@ void handleAddShowTime(int sockfd) {
     sprintf(message, "SHOW_FILMS\r\n");
     sendMessage(sockfd, message);
 
+    int result = recvResult(sockfd);
+    if (result != FIND_FILM_SUCCESS && result != NO_FILMS) {
+        printf("Error loading films!\n");
+        return;
+    }
+    if (result == NO_FILMS) {
+        printf("No films available!\n");
+        return;
+    }
+
     printf("\nAvailable Films: \n");
     while (1) {
         memset(message, 0, sizeof(message));
@@ -612,6 +718,16 @@ void handleAddShowTime(int sockfd) {
     memset(message, 0, sizeof(message));
     sprintf(message, "SHOW_CINEMAS\r\n");
     sendMessage(sockfd, message);
+
+    result = recvResult(sockfd);
+    if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
+        printf("Error loading cinemas!\n");
+        return;
+    }
+    if (result == NO_CINEMAS) {
+        printf("No cinemas available!\n");
+        return;
+    }
 
     printf("\nAvailable Cinemas: \n");
     while (1) {
@@ -631,6 +747,20 @@ void handleAddShowTime(int sockfd) {
     sprintf(message, "SHOW_ROOMS_BY_CINEMA\r\n%s\r\n", cinema_id);
     sendMessage(sockfd, message);
 
+    result = recvResult(sockfd);
+    if (result == INVALID_CINEMA) {
+        printf("Invalid cinema ID!\n");
+        return;
+    }
+    if (result == NO_ROOMS || result == FAILED_ROOMS) {
+        printf("No rooms available in this cinema!\n");
+        return;
+    }
+    if (result != VIEW_CHAIR_SUCCESS) {
+        printf("Error loading rooms!\n");
+        return;
+    }
+
     printf("\nAvailable Rooms: \n");
     while (1) {
         memset(message, 0, sizeof(message));
@@ -649,14 +779,19 @@ void handleAddShowTime(int sockfd) {
     sprintf(message, "SHOW_SHOWTIMES_BY_ROOM\r\n%s\r\n", room_id);
     sendMessage(sockfd, message);
 
-    printf("\nCurrent Showtimes in Room:\n");
-    while (1) {
-        memset(message, 0, sizeof(message));
-        recvMessage(sockfd, message);
-        if (strcmp(message, "END") == 0) {
-            break;  
+    result = recvResult(sockfd);
+    if (result == SHOW_TIME_FAIL) {
+        printf("\nNo showtimes in this room yet.\n");
+    } else if (result == SHOW_SHOWTIME_SUCCESS) {
+        printf("\nCurrent Showtimes in Room:\n");
+        while (1) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) {
+                break;  
+            }
+            printf("%s\n", message);
         }
-        printf("%s\n", message);
     }
     printf("Enter start time (YYYY-MM-DD HH:MM:SS): ");
     printf("Format example: 2025-12-11 14:30:00\n");
@@ -674,9 +809,26 @@ void handleAddShowTime(int sockfd) {
     sendMessage(sockfd, message);
 
     // 7. Receive return result from the server
-    memset(message, 0, sizeof(message));
-    recvMessage(sockfd, message);
-    printf("%s\n", message);
+    result = recvResult(sockfd);
+    if (result == ADD_SHOWTIME_SUCCESS) {
+        printf("\nShowtime added successfully!\n");
+    } else if (result == INVALID_FILM_ID) {
+        printf("\nInvalid film ID!\n");
+    } else if (result == DB_QUERY_ERROR) {
+        printf("\nDatabase error!\n");
+    } else if (result == INVALID_CINEMA_ID) {
+        printf("\nInvalid cinema ID!\n");
+    } else if (result == INVALID_ROOM_ID) {
+        printf("\nInvalid room ID or room is not active!\n");
+    } else if (result == ROOM_NOT_BELONG_CINEMA) {
+        printf("\nRoom does not belong to the selected cinema!\n");
+    } else if (result == INVALID_DATETIME_FORMAT) {
+        printf("\nInvalid datetime format!\n");
+    } else if (result == SCHEDULING_CONFLICT) {
+        printf("\nScheduling conflict! There is another showtime in this room at that time.\n");
+    } else {
+        printf("\nFailed to add showtime!\n");
+    }
 }
 /*-----END ADD SHOW TIME-----*/
 

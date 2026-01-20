@@ -1,4 +1,5 @@
 #include "browsefilmdialog.h"
+#include "responsecodes.h"
 #include <QMessageBox>
 #include <QGroupBox>
 
@@ -55,11 +56,30 @@ void BrowseFilmDialog::setupUI()
     sprintf(message, "SHOW_CATEGORIES\r\n");
     sendMessage(sockfd, message);
     
-    while (true) {
-        memset(message, 0, sizeof(message));
-        recvMessage(sockfd, message);
-        if (strcmp(message, "END") == 0) break;
-        categoryListWidget->addItem(QString::fromUtf8(message));
+    int result = recvResult(sockfd);
+    if (result != SHOW_CATEGORY_SUCCESS && result != NO_CATEGORIES) {
+        // Read END marker
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
+        QMessageBox::warning(this, "Error", "Failed to load categories!");
+    } else if (result == NO_CATEGORIES) {
+        // Read END marker
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
+        QMessageBox::information(this, "Info", "No categories available!");
+    } else {
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+            categoryListWidget->addItem(QString::fromUtf8(message));
+        }
     }
     
     // ========== CINEMA TAB ==========
@@ -90,52 +110,35 @@ void BrowseFilmDialog::setupUI()
     sprintf(message, "SHOW_CINEMAS\r\n");
     sendMessage(sockfd, message);
     
-    while (true) {
-        memset(message, 0, sizeof(message));
-        recvMessage(sockfd, message);
-        if (strcmp(message, "END") == 0) break;
-        cinemaListWidget->addItem(QString::fromUtf8(message));
-    }
-    
-    // ========== SHOWTIME TAB ==========
-    showtimeTab = new QWidget();
-    QVBoxLayout *showtimeLayout = new QVBoxLayout(showtimeTab);
-    
-    QLabel *showtimeLabel = new QLabel("Select a Showtime:", showtimeTab);
-    showtimeLabel->setStyleSheet("font-weight: bold; font-size: 14px;");
-    
-    showtimeListWidget = new QListWidget(showtimeTab);
-    showtimeListWidget->setMaximumHeight(150);
-    
-    browseShowtimeBtn = new QPushButton("Browse Films", showtimeTab);
-    browseShowtimeBtn->setMinimumHeight(35);
-    
-    QLabel *resultShowtimeLabel = new QLabel("Films:", showtimeTab);
-    resultShowtimeLabel->setStyleSheet("font-weight: bold; font-size: 14px; margin-top: 10px;");
-    
-    filmByShowtimeListWidget = new QListWidget(showtimeTab);
-    
-    showtimeLayout->addWidget(showtimeLabel);
-    showtimeLayout->addWidget(showtimeListWidget);
-    showtimeLayout->addWidget(browseShowtimeBtn);
-    showtimeLayout->addWidget(resultShowtimeLabel);
-    showtimeLayout->addWidget(filmByShowtimeListWidget);
-    
-    // Load showtimes
-    sprintf(message, "SHOW_PREMIERED_TIME\r\n");
-    sendMessage(sockfd, message);
-    
-    while (true) {
-        memset(message, 0, sizeof(message));
-        recvMessage(sockfd, message);
-        if (strcmp(message, "END") == 0) break;
-        showtimeListWidget->addItem(QString::fromUtf8(message));
+    result = recvResult(sockfd);
+    if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
+        // Read END marker
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
+        QMessageBox::warning(this, "Error", "Failed to load cinemas!");
+    } else if (result == NO_CINEMAS) {
+        // Read END marker
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
+        QMessageBox::information(this, "Info", "No cinemas available!");
+    } else {
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+            cinemaListWidget->addItem(QString::fromUtf8(message));
+        }
     }
     
     // Add tabs to tab widget
     tabWidget->addTab(categoryTab, "By Category");
     tabWidget->addTab(cinemaTab, "By Cinema");
-    tabWidget->addTab(showtimeTab, "By Showtime");
     
     // Close button
     QPushButton *closeBtn = new QPushButton("Close", this);
@@ -147,7 +150,6 @@ void BrowseFilmDialog::setupUI()
     // Connect signals
     connect(browseCategoryBtn, &QPushButton::clicked, this, &BrowseFilmDialog::onBrowseByCategory);
     connect(browseCinemaBtn, &QPushButton::clicked, this, &BrowseFilmDialog::onBrowseByCinema);
-    connect(browseShowtimeBtn, &QPushButton::clicked, this, &BrowseFilmDialog::onBrowseByShowtime);
     connect(closeBtn, &QPushButton::clicked, this, &QDialog::accept);
 }
 
@@ -183,6 +185,12 @@ void BrowseFilmDialog::onBrowseByCategory()
             filmByCategoryListWidget->addItem(QString::fromUtf8(message));
         }
     } else {
+        // Read END marker even on failure
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         filmByCategoryListWidget->addItem("No films found in this category!");
     }
 }
@@ -219,42 +227,12 @@ void BrowseFilmDialog::onBrowseByCinema()
             filmByCinemaListWidget->addItem(QString::fromUtf8(message));
         }
     } else {
-        filmByCinemaListWidget->addItem("No films found in this cinema!");
-    }
-}
-
-void BrowseFilmDialog::onBrowseByShowtime()
-{
-    QListWidgetItem *item = showtimeListWidget->currentItem();
-    if (!item) {
-        QMessageBox::warning(this, "Warning", "Please select a showtime!");
-        return;
-    }
-    
-    QString selectedText = item->text();
-    QStringList parts = selectedText.split(".");
-    if (parts.isEmpty()) return;
-    
-    QString showtimeId = parts[0].trimmed();
-    
-    char message[2048];
-    char showtimeIdStr[255];
-    strcpy(showtimeIdStr, showtimeId.toUtf8().constData());
-    
-    makeBrowseFollowPremieredTimeMessage(showtimeIdStr, message);
-    sendMessage(sockfd, message);
-    
-    int result = recvResult(sockfd);
-    filmByShowtimeListWidget->clear();
-    
-    if (result == BROWSE_TIME_SUCCESS) {
+        // Read END marker even on failure
         while (true) {
             memset(message, 0, sizeof(message));
             recvMessage(sockfd, message);
             if (strcmp(message, "END") == 0) break;
-            filmByShowtimeListWidget->addItem(QString::fromUtf8(message));
         }
-    } else {
-        filmByShowtimeListWidget->addItem("No films found in this time slot!");
+        filmByCinemaListWidget->addItem("No films found in this cinema!");
     }
 }

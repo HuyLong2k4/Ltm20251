@@ -21,7 +21,6 @@ public:
 private slots:
     void onBrowseByCategory();
     void onBrowseByCinema();
-    void onBrowseByShowtime();
 
 private:
     void setupUI();
@@ -42,12 +41,6 @@ private:
     QListWidget *cinemaListWidget;
     QListWidget *filmByCinemaListWidget;
     QPushButton *browseCinemaBtn;
-    
-    // Showtime tab
-    QWidget *showtimeTab;
-    QListWidget *showtimeListWidget;
-    QListWidget *filmByShowtimeListWidget;
-    QPushButton *browseShowtimeBtn;
 };
 
 #endif // BROWSEFILMDIALOG_H

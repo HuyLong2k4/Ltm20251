@@ -1,6 +1,6 @@
 #include "managerdialog.h"
+#include "responsecodes.h"
 #include "browsefilmdialog.h"
-#include "addshowtimedialog.h"
 
 extern "C" {
     #include "../client/headers/menu.h"
@@ -31,10 +31,6 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
     addFilmBtn->setStyleSheet("background-color: #5cb85c; color: white; padding: 15px; font-weight: bold; font-size: 14px;");
     addFilmBtn->setMinimumHeight(50);
     
-    addShowTimeBtn = new QPushButton("Add Show Time", this);
-    addShowTimeBtn->setStyleSheet("background-color: #f0ad4e; color: white; padding: 15px; font-weight: bold; font-size: 14px;");
-    addShowTimeBtn->setMinimumHeight(50);
-    
     browseFilmsBtn = new QPushButton("Browse Films", this);
     browseFilmsBtn->setStyleSheet("background-color: #5bc0de; color: white; padding: 15px; font-weight: bold; font-size: 14px;");
     browseFilmsBtn->setMinimumHeight(50);
@@ -48,7 +44,6 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
     mainLayout->addWidget(userLabel);
     mainLayout->addSpacing(30);
     mainLayout->addWidget(addFilmBtn);
-    mainLayout->addWidget(addShowTimeBtn);
     mainLayout->addWidget(browseFilmsBtn);
     mainLayout->addStretch();
     mainLayout->addWidget(logoutBtn);
@@ -58,7 +53,6 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
     
     // Connect signals
     connect(addFilmBtn, &QPushButton::clicked, this, &ManagerDialog::onAddFilmClicked);
-    connect(addShowTimeBtn, &QPushButton::clicked, this, &ManagerDialog::onAddShowTimeClicked);
     connect(browseFilmsBtn, &QPushButton::clicked, this, &ManagerDialog::onBrowseFilmsClicked);
     connect(logoutBtn, &QPushButton::clicked, this, &ManagerDialog::onLogoutClicked);
 }
@@ -66,12 +60,6 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
 void ManagerDialog::onAddFilmClicked()
 {
     showAddFilmDialog();
-}
-
-void ManagerDialog::onAddShowTimeClicked()
-{
-    AddShowTimeDialog dialog(sockfd, this);
-    dialog.exec();
 }
 
 void ManagerDialog::onBrowseFilmsClicked()
@@ -125,18 +113,21 @@ void ManagerDialog::showAddFilmDialog()
     sprintf(message, "SHOW_CATEGORIES\r\n");
     sendMessage(sockfd, message);
     
-    while (true) {
-        memset(message, 0, sizeof(message));
-        recvMessage(sockfd, message);
-        QString line = QString::fromUtf8(message).trimmed();
-        if (line == "END" || line.isEmpty()) break;
-        
-        // Parse: "1. Action" format
-        QStringList parts = line.split(". ");
-        if (parts.size() >= 2) {
-            QString id = parts[0].trimmed();
-            QString name = parts[1].trimmed();
-            categoryCombo->addItem(name, id);
+    int result = recvResult(sockfd);
+    if (result == SHOW_CATEGORY_SUCCESS) {
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            QString line = QString::fromUtf8(message).trimmed();
+            if (line == "END" || line.isEmpty()) break;
+            
+            // Parse: "1. Action" format
+            QStringList parts = line.split(". ");
+            if (parts.size() >= 2) {
+                QString id = parts[0].trimmed();
+                QString name = parts[1].trimmed();
+                categoryCombo->addItem(name, id);
+            }
         }
     }
     
@@ -194,10 +185,10 @@ void ManagerDialog::showAddFilmDialog()
         sendMessage(sockfd, msg);
         
         int addResult = recvResult(sockfd);
-        if (addResult == 1080) { // ADD_FILM_SUCCESS
+        if (addResult == ADD_FILM_SUCCESS) {
             QMessageBox::information(addDialog, "Success", "Film added successfully!");
             addDialog->accept();
-        } else if (addResult == 2082) { // FILM_EXISTS
+        } else if (addResult == FILM_EXISTS) {
             QMessageBox::warning(addDialog, "Error", "Film already exists!");
         } else {
             QMessageBox::critical(addDialog, "Error", "Failed to add film!");

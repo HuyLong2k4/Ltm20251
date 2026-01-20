@@ -1,4 +1,5 @@
 #include "addshowtimedialog.h"
+#include "responsecodes.h"
 
 extern "C" {
     #include "../lib/socket/socket.h"
@@ -135,6 +136,16 @@ void AddShowTimeDialog::loadFilms()
     sprintf(message, "SHOW_FILMS\r\n");
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
+    if (result != FIND_FILM_SUCCESS && result != NO_FILMS) {
+        QMessageBox::warning(this, "Error", "Failed to load films!");
+        return;
+    }
+    if (result == NO_FILMS) {
+        QMessageBox::information(this, "Info", "No films available!");
+        return;
+    }
+    
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
@@ -142,12 +153,6 @@ void AddShowTimeDialog::loadFilms()
         
         if (line == "END" || line.isEmpty()) {
             break;
-        }
-        
-        // Check for error messages
-        if (line.contains("available", Qt::CaseInsensitive) || 
-            line.contains("load", Qt::CaseInsensitive)) {
-            continue;
         }
         
         // Parse: "1. Avatar" format
@@ -175,6 +180,16 @@ void AddShowTimeDialog::loadCinemas()
     sprintf(message, "SHOW_CINEMAS\r\n");
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
+    if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
+        QMessageBox::warning(this, "Error", "Failed to load cinemas!");
+        return;
+    }
+    if (result == NO_CINEMAS) {
+        QMessageBox::information(this, "Info", "No cinemas available!");
+        return;
+    }
+    
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
@@ -182,12 +197,6 @@ void AddShowTimeDialog::loadCinemas()
         
         if (line == "END" || line.isEmpty()) {
             break;
-        }
-        
-        // Check for error messages
-        if (line.contains("available", Qt::CaseInsensitive) || 
-            line.contains("load", Qt::CaseInsensitive)) {
-            continue;
         }
         
         // Parse: "1. Cinema Name" format
@@ -219,6 +228,20 @@ void AddShowTimeDialog::loadRooms(const QString &cinemaId)
     sprintf(message, "SHOW_ROOMS_BY_CINEMA\r\n%s\r\n", cinemaId.toUtf8().constData());
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
+    if (result == INVALID_CINEMA) {
+        QMessageBox::warning(this, "Error", "Invalid cinema ID!");
+        return;
+    }
+    if (result == NO_ROOMS || result == FAILED_ROOMS) {
+        QMessageBox::information(this, "Info", "No rooms available in this cinema!");
+        return;
+    }
+    if (result != VIEW_CHAIR_SUCCESS) {
+        QMessageBox::warning(this, "Error", "Failed to load rooms!");
+        return;
+    }
+    
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
@@ -226,13 +249,6 @@ void AddShowTimeDialog::loadRooms(const QString &cinemaId)
         
         if (line == "END" || line.isEmpty()) {
             break;
-        }
-        
-        // Check for error or info messages
-        if (line.contains("available", Qt::CaseInsensitive) || 
-            line.contains("ERROR", Qt::CaseInsensitive) ||
-            line.contains("Failed", Qt::CaseInsensitive)) {
-            continue;
         }
         
         // Parse: "ID: 1 | Room A | 50 seats"
@@ -264,24 +280,28 @@ void AddShowTimeDialog::loadShowtimes(const QString &roomId)
     sprintf(message, "SHOW_SHOWTIMES_BY_ROOM\r\n%s\r\n", roomId.toUtf8().constData());
     sendMessage(sockfd, message);
     
+    int result = recvResult(sockfd);
+    if (result == SHOW_TIME_FAIL) {
+        int row = showtimeTable->rowCount();
+        showtimeTable->insertRow(row);
+        
+        QTableWidgetItem *item = new QTableWidgetItem("No showtimes in this room yet.");
+        item->setTextAlignment(Qt::AlignCenter);
+        item->setForeground(QBrush(Qt::gray));
+        showtimeTable->setItem(row, 0, item);
+        showtimeTable->setSpan(row, 0, 1, 3);
+        return;
+    }
+    if (result != SHOW_SHOWTIME_SUCCESS) {
+        return;
+    }
+    
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
         QString line = QString::fromUtf8(message).trimmed();
         
         if (line == "END" || line.isEmpty()) {
-            break;
-        }
-        
-        if (line.contains("No showtimes", Qt::CaseInsensitive)) {
-            int row = showtimeTable->rowCount();
-            showtimeTable->insertRow(row);
-            
-            QTableWidgetItem *item = new QTableWidgetItem(line);
-            item->setTextAlignment(Qt::AlignCenter);
-            item->setForeground(QBrush(Qt::gray));
-            showtimeTable->setItem(row, 0, item);
-            showtimeTable->setSpan(row, 0, 1, 3);
             break;
         }
         
@@ -397,18 +417,41 @@ void AddShowTimeDialog::onAddShowTimeClicked()
     sendMessage(sockfd, message);
     
     // Receive response
-    memset(message, 0, sizeof(message));
-    recvMessage(sockfd, message);
-    QString response = QString::fromUtf8(message).trimmed();
+    int result = recvResult(sockfd);
     
-    if (response.contains("successfully", Qt::CaseInsensitive)) {
+    if (result == ADD_SHOWTIME_SUCCESS) {
         QMessageBox::information(this, "Success", 
                                "Show time added successfully!");
         // Refresh showtimes table
         loadShowtimes(selectedRoomId);
     } else {
-        QMessageBox::critical(this, "Error", 
-                            "Failed to add show time:\n" + response);
+        QString errorMsg;
+        switch(result) {
+            case INVALID_FILM_ID:
+                errorMsg = "Invalid film ID!";
+                break;
+            case DB_QUERY_ERROR:
+                errorMsg = "Database error!";
+                break;
+            case INVALID_CINEMA_ID:
+                errorMsg = "Invalid cinema ID!";
+                break;
+            case INVALID_ROOM_ID:
+                errorMsg = "Invalid room ID or room is not active!";
+                break;
+            case ROOM_NOT_BELONG_CINEMA:
+                errorMsg = "Room does not belong to the selected cinema!";
+                break;
+            case INVALID_DATETIME_FORMAT:
+                errorMsg = "Invalid datetime format!";
+                break;
+            case SCHEDULING_CONFLICT:
+                errorMsg = "Scheduling conflict! There is another showtime in this room at that time.";
+                break;
+            default:
+                errorMsg = "Failed to add showtime!";
+        }
+        QMessageBox::critical(this, "Error", errorMsg);
     }
 }
 

@@ -1,4 +1,5 @@
 #include "viewticketdetaildialog.h"
+#include "responsecodes.h"
 
 extern "C" {
     #include "../lib/socket/socket.h"
@@ -81,7 +82,20 @@ void ViewTicketDetailDialog::loadTicketDetail()
     sprintf(message, "VIEW_TICKET_DETAIL\r\n%s\r\n", ticketId.toUtf8().constData());
     sendMessage(sockfd, message);
     
-    // Receive response
+    // Receive result code
+    int result = recvResult(sockfd);
+    
+    if (result == TICKET_NOT_FOUND) {
+        QMessageBox::warning(this, "Error", "Ticket not found!");
+        customerLabel->setText("Ticket not found!");
+        return;
+    }
+    if (result != VIEW_CHAIR_SUCCESS) {
+        QMessageBox::warning(this, "Error", "Failed to load ticket detail!");
+        return;
+    }
+    
+    // Receive response data
     QString customer, film, cinema, room, showtime, booked;
     
     while (true) {
@@ -92,12 +106,6 @@ void ViewTicketDetailDialog::loadTicketDetail()
         
         if (response == "END") {
             break;
-        }
-        
-        if (response.contains("Ticket not found")) {
-            QMessageBox::warning(this, "Error", "Ticket not found!");
-            customerLabel->setText("Ticket not found!");
-            return;
         }
         
         // Parse different lines

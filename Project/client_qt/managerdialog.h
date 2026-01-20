@@ -21,7 +21,6 @@ public:
 
 private slots:
     void onAddFilmClicked();
-    void onAddShowTimeClicked();
     void onBrowseFilmsClicked();
     void onLogoutClicked();
 
@@ -34,7 +33,6 @@ private:
     QLabel *titleLabel;
     QLabel *userLabel;
     QPushButton *addFilmBtn;
-    QPushButton *addShowTimeBtn;
     QPushButton *browseFilmsBtn;
     QPushButton *logoutBtn;
 };

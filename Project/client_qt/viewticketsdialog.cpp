@@ -1,4 +1,5 @@
 #include "viewticketsdialog.h"
+#include "responsecodes.h"
 #include "viewticketdetaildialog.h"
 
 extern "C" {
@@ -83,8 +84,43 @@ void ViewTicketsDialog::loadTickets()
     sprintf(message, "VIEW_TICKETS\r\n%s\r\n", username.toUtf8().constData());
     sendMessage(sockfd, message);
     
-    // Receive response
+    // Receive result code
+    int result = recvResult(sockfd);
+    
+    if (result == NO_TICKETS) {
+        // Read END marker
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
+        statusLabel->setText("No tickets found.");
+        return;
+    }
+    if (result == FAILED_RETRIEVE) {
+        // Read END marker
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
+        statusLabel->setText("Failed to retrieve tickets.");
+        return;
+    }
+    if (result != VIEW_CHAIR_SUCCESS) {
+        // Read END marker
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
+        statusLabel->setText("Error loading tickets!");
+        return;
+    }
+    
+    // Receive data
     int rowCount = 0;
+    bool firstLine = true;
     while (true) {
         memset(message, 0, sizeof(message));
         recvMessage(sockfd, message);
@@ -93,6 +129,12 @@ void ViewTicketsDialog::loadTickets()
         
         if (response == "END") {
             break;
+        }
+        
+        // Skip header line
+        if (firstLine) {
+            firstLine = false;
+            continue;
         }
         
         // Parse response

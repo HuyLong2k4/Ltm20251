@@ -551,6 +551,7 @@ changepassworddialog.o: changepassworddialog.cpp changepassworddialog.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o changepassworddialog.o changepassworddialog.cpp
 
 browsefilmdialog.o: browsefilmdialog.cpp browsefilmdialog.h \
+		responsecodes.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h \
 		../client/headers/menu.h
@@ -563,17 +564,20 @@ searchfilmdialog.o: searchfilmdialog.cpp searchfilmdialog.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o searchfilmdialog.o searchfilmdialog.cpp
 
 bookticketdialog.o: bookticketdialog.cpp bookticketdialog.h \
+		responsecodes.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h \
 		../client/headers/menu.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bookticketdialog.o bookticketdialog.cpp
 
 viewticketsdialog.o: viewticketsdialog.cpp viewticketsdialog.h \
+		responsecodes.h \
 		viewticketdetaildialog.h \
 		../lib/socket/socket.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o viewticketsdialog.o viewticketsdialog.cpp
 
 viewticketdetaildialog.o: viewticketdetaildialog.cpp viewticketdetaildialog.h \
+		responsecodes.h \
 		../lib/socket/socket.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o viewticketdetaildialog.o viewticketdetaildialog.cpp
 
@@ -584,14 +588,15 @@ admindialog.o: admindialog.cpp admindialog.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o admindialog.o admindialog.cpp
 
 managerdialog.o: managerdialog.cpp managerdialog.h \
+		responsecodes.h \
 		browsefilmdialog.h \
-		addshowtimedialog.h \
 		../client/headers/menu.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o managerdialog.o managerdialog.cpp
 
 addshowtimedialog.o: addshowtimedialog.cpp addshowtimedialog.h \
+		responsecodes.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o addshowtimedialog.o addshowtimedialog.cpp
