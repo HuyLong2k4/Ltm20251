@@ -63,7 +63,7 @@
 /*----------END ADD FILM--------*/
 
 /*----------SHOW DATA CODES--------*/
-#define SHOW_CATEGORY_SUCCESS 1060
+#define SHOW_CATEGORY_SUCCESS 1065
 #define NO_CATEGORIES 3002
 #define NO_CINEMAS 3004
 #define NO_SHOWTIMES 3006

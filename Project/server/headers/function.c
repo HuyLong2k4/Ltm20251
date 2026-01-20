@@ -30,7 +30,7 @@
 #define BROWSE_FAIL 2071
 #define FIND_FILM_SUCCESS 1073
 #define FIND_FILM_FAIL 2072
-#define SHOW_CATEGORY_SUCCESS 1060
+#define SHOW_CATEGORY_SUCCESS 1065
 #define SHOW_CATEGORY_FAIL 2060
 #define VIEW_CHAIR_SUCCESS 1080
 #define VIEW_CHAIR_FAIL 2081
@@ -215,14 +215,14 @@ void handleSearchFilmByTitle(MYSQL *conn, int connfd, char *title) {
 
     if (mysql_query(conn, query) != 0) {
         sendResult(connfd, FIND_FILM_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if (!res || mysql_num_rows(res) == 0) {
         sendResult(connfd, FIND_FILM_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if (res) mysql_free_result(res);
         return;
     }
@@ -256,14 +256,14 @@ void handleShowCategory(MYSQL *conn, int connfd){
 
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, CANT_LOAD_CATEGORIES);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, NO_CATEGORIES);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -288,14 +288,14 @@ void handleShowCinema(MYSQL *conn, int connfd){
 
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, CANT_LOAD_CINEMAS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, NO_CINEMAS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -326,14 +326,14 @@ void handleShowPremieredTime(MYSQL *conn, int connfd){
 
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, CANT_LOAD_SHOWTIMES);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, NO_SHOWTIMES);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -360,14 +360,14 @@ void handleBrowseCategory(MYSQL *conn, int connfd, char *category_id){
 
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, BROWSE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, BROWSE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -401,14 +401,14 @@ void handleBrowseCinema(MYSQL *conn, int connfd, char *cinema_id){
 
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, BROWSE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, BROWSE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -440,14 +440,14 @@ void handleBrowseShowTime(MYSQL *conn, int connfd, char *time_slot){
 
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, BROWSE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, BROWSE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -477,14 +477,14 @@ void handleShowFilm(MYSQL *conn, int connfd) {
 
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, CANT_LOAD_FILMS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, NO_FILMS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -522,14 +522,14 @@ void handleShowCinemaByFilm(MYSQL *conn, int connfd) {
 
     if (mysql_query(conn, query) != 0) {
         sendResult(connfd, CANT_LOAD_CINEMAS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if (!res || mysql_num_rows(res) == 0) {
         sendResult(connfd, NO_CINEMAS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -570,14 +570,14 @@ void handleShowTimeByFilmCinema(MYSQL *conn, int connfd) {
 
     if (mysql_query(conn, query) != 0) {
         sendResult(connfd, CANT_LOAD_SHOWTIMES);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     if (!res || mysql_num_rows(res) == 0) {
         sendResult(connfd, NO_SHOWTIMES);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -603,7 +603,7 @@ void handleShowSeat(MYSQL *conn, int connfd) {
     char *tmp = strtok(NULL, "\r\n");
     if(!tmp) {
         sendResult(connfd, INVALID_REQUEST);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
     strcpy(showtime_id_str, tmp);
@@ -611,7 +611,7 @@ void handleShowSeat(MYSQL *conn, int connfd) {
     ShowtimeCache *st = findShowtime(showtime_id);
     if (!st) {
         sendResult(connfd, INVALID_SHOWTIME);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
@@ -628,7 +628,7 @@ void handleShowSeat(MYSQL *conn, int connfd) {
     if (available_count == 0) {
         pthread_mutex_unlock(&st->lock);
         sendResult(connfd, NO_SEATS_AVAILABLE);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
@@ -662,7 +662,7 @@ void handleBookTicket(
     ShowtimeCache *st = findShowtime(showtime_id);
     if (!st) {
         sendResult(connfd, BOOK_TICKET_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
@@ -672,7 +672,7 @@ void handleBookTicket(
     if (!seat || seat->is_booked) {
         pthread_mutex_unlock(&st->lock);
         sendResult(connfd, BOOK_TICKET_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
@@ -691,7 +691,7 @@ void handleBookTicket(
 
     if (mysql_query(conn, query) == 0) {
         sendResult(connfd, BOOK_TICKET_SUCCESS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     } else {
         // Rollback RAM nếu DB fail
         pthread_mutex_lock(&st->lock);
@@ -700,7 +700,7 @@ void handleBookTicket(
         pthread_mutex_unlock(&st->lock);
         
         sendResult(connfd, BOOK_TICKET_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     }
 }
 
@@ -777,15 +777,14 @@ void handleViewTickets(MYSQL *conn, int connfd, char *username) {
             
             sprintf(message, "\nYou has total: %lu ticket(s)", mysql_num_rows(result));
             sendMessage(connfd, message);
+            sendMessage(connfd, MSG_END);
         }
         mysql_free_result(result);
     } else {
         sendResult(connfd, FAILED_RETRIEVE);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
-    
-    sendMessage(connfd, MSG_END);
 }
 void handleViewTicketDetail(MYSQL *conn, int connfd, char *ticket_id) {
 
@@ -812,7 +811,7 @@ void handleViewTicketDetail(MYSQL *conn, int connfd, char *ticket_id) {
         
         if (mysql_num_rows(result) == 0) {
             sendResult(connfd, TICKET_NOT_FOUND);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             mysql_free_result(result);
             return;
         } else {
@@ -845,7 +844,7 @@ void handleViewTicketDetail(MYSQL *conn, int connfd, char *ticket_id) {
         mysql_free_result(result);
     } else {
         sendResult(connfd, VIEW_CHAIR_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     }
 }
 
@@ -859,7 +858,6 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
     char query[2048];
 
 
-    // 1. Check if film already exists
     sprintf(query, 
         "SELECT COUNT(*) FROM films WHERE LOWER(title) = LOWER('%s')", title);
     
@@ -869,14 +867,13 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
         if (row && atoi(row[0]) > 0) {
             mysql_free_result(result);
             printf("[DEBUG] Film already exists\n");
-            sendResult(connfd, 2082); // FILM_EXISTS
+            sendResult(connfd, ADD_FILM_FAIL);
             sendMessage(connfd, MSG_END);
             return;
         }
         mysql_free_result(result);
     }
     
-    // 2. Check category_id exists
     sprintf(query, 
         "SELECT COUNT(*) FROM categories WHERE id = %s", category_id);
     if (mysql_query(conn, query) == 0) {
@@ -885,7 +882,7 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
         if (row && atoi(row[0]) == 0) {
             mysql_free_result(result);
             printf("[DEBUG] Category does not exist\n");
-            sendResult(connfd, 2081); // ADD_FILM_FAIL
+            sendResult(connfd, ADD_FILM_FAIL);
             sendMessage(connfd, MSG_END);
             return;
         }
@@ -902,11 +899,11 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
     if (mysql_query(conn, query) == 0) {
         int film_id = mysql_insert_id(conn);
         printf("[LOG] Added film: %s (ID: %d)\n", title, film_id);
-        sendResult(connfd, 1080); // ADD_FILM_SUCCESS
+        sendResult(connfd, ADD_FILM_SUCCESS);
         sendMessage(connfd, MSG_END);
     } else {
         printf("[ERROR] Failed to add film: %s\n", mysql_error(conn));
-        sendResult(connfd, 2081); // ADD_FILM_FAIL
+        sendResult(connfd, ADD_FILM_FAIL);
         sendMessage(connfd, MSG_END);
     }
 }
@@ -927,7 +924,7 @@ void handleShowRoomsByCinema(MYSQL *conn, int connfd, char *cinema_id) {
         if (row && atoi(row[0]) == 0) {
             mysql_free_result(result);
             sendResult(connfd, INVALID_CINEMA);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             return;
         }
         mysql_free_result(result);
@@ -945,7 +942,7 @@ void handleShowRoomsByCinema(MYSQL *conn, int connfd, char *cinema_id) {
     
         if (mysql_num_rows(result) == 0) {
             sendResult(connfd, NO_ROOMS);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             mysql_free_result(result);
             return;
         } else {
@@ -954,18 +951,17 @@ void handleShowRoomsByCinema(MYSQL *conn, int connfd, char *cinema_id) {
             while ((row = mysql_fetch_row(result))) {
                 sprintf(message, "ID: %s | %s | %s seats", 
                         row[0], row[1], row[2]);
-                sendMessage(connfd, message);
+                sendMessage(connfd, message);                
             }
+            sendMessage(connfd, MSG_END);
         }
         mysql_free_result(result);
     }
     else {
         sendResult(connfd, FAILED_ROOMS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
-    
-    sendMessage(connfd, MSG_END);
 }
 
 void handleShowShowtimesByRoom(MYSQL *conn, int connfd, char *room_id) {
@@ -986,7 +982,7 @@ void handleShowShowtimesByRoom(MYSQL *conn, int connfd, char *room_id) {
 
         if (mysql_num_rows(result) == 0) {
             sendResult(connfd, SHOW_TIME_FAIL);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
         }
         else {
             sendResult(connfd, SHOW_SHOWTIME_SUCCESS);
@@ -1020,7 +1016,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
             mysql_free_result(result);
             printf("[ERROR] Invalid film ID\n");
             sendResult(connfd, INVALID_FILM_ID);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             return;
         }
         MYSQL_ROW row = mysql_fetch_row(result);
@@ -1031,7 +1027,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
     else {
         printf("[ERROR] Database query error: %s\n", mysql_error(conn));
         sendResult(connfd, DB_QUERY_ERROR);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
@@ -1044,7 +1040,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
             mysql_free_result(result);
             printf("[ERROR] Invalid cinema ID\n");
             sendResult(connfd, INVALID_CINEMA_ID);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             return;
         }
         mysql_free_result(result);
@@ -1059,7 +1055,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
             mysql_free_result(result);
             printf("[ERROR] Invalid room ID or room is not active\n");
             sendResult(connfd, INVALID_ROOM_ID);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             return;
         }
         MYSQL_ROW row = mysql_fetch_row(result);
@@ -1069,7 +1065,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
         if (room_cinema_id != atoi(cinema_id)) {
             printf("[ERROR] Room does not belong to the selected cinema\n");
             sendResult(connfd, ROOM_NOT_BELONG_CINEMA);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             return;
         }
     }
@@ -1086,7 +1082,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
     else {
         printf("[ERROR] Invalid start datetime format\n");
         sendResult(connfd, INVALID_DATETIME_FORMAT);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
 
@@ -1107,7 +1103,7 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
             mysql_free_result(result);
             printf("[ERROR] Has scheduling conflict in the selected room\n");
             sendResult(connfd, SCHEDULING_CONFLICT);
-            sendMessage(connfd, MSG_END);
+            // sendMessage(connfd, MSG_END);
             return;
         }
         mysql_free_result(result);
@@ -1135,14 +1131,14 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
             mysql_free_result(result);
         }
         sendResult(connfd, ADD_SHOWTIME_SUCCESS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         printf("[LOG] Added showtime (ID: %d) for film %s at %s - %s - %s\n", 
                showtime_id, film_id, cinema_name, room_name, start_datetime);
     }
     else {
         printf("[ERROR] Failed to add showtime: %s\n", mysql_error(conn));
         sendResult(connfd, ADD_SHOWTIME_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     }
 }
 
@@ -1162,7 +1158,7 @@ void handleShowAllUsers(MYSQL *conn, int connfd) {
     if(mysql_query(conn, query) != 0){
         printf("[DEBUG] Query failed: %s\n", mysql_error(conn));
         sendResult(connfd, SHOW_ALL_USERS_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
     
@@ -1170,7 +1166,7 @@ void handleShowAllUsers(MYSQL *conn, int connfd) {
     if(!res || mysql_num_rows(res) == 0){
         printf("[DEBUG] No results or empty result set\n");
         sendResult(connfd, SHOW_ALL_USERS_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -1210,7 +1206,7 @@ void handleDeleteUser(MYSQL *conn, int connfd) {
     if(!user_id_str) {
         printf("[DEBUG] Missing user_id parameter\n");
         sendResult(connfd, DELETE_USER_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
     
@@ -1221,14 +1217,14 @@ void handleDeleteUser(MYSQL *conn, int connfd) {
     sprintf(query, "SELECT id FROM users WHERE id = %d", user_id);
     if(mysql_query(conn, query) != 0){
         sendResult(connfd, DELETE_USER_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
     
     MYSQL_RES *res = mysql_store_result(conn);
     if(!res || mysql_num_rows(res) == 0){
         sendResult(connfd, DELETE_USER_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         if(res) mysql_free_result(res);
         return;
     }
@@ -1238,10 +1234,10 @@ void handleDeleteUser(MYSQL *conn, int connfd) {
     sprintf(query, "DELETE FROM users WHERE id = %d", user_id);
     if(mysql_query(conn, query) == 0){
         sendResult(connfd, DELETE_USER_SUCCESS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     } else {
         sendResult(connfd, DELETE_USER_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     }
 }
 
@@ -1256,7 +1252,7 @@ void handleChangeUserRole(MYSQL *conn, int connfd) {
     if(!user_id_str || !new_role_str) {
         printf("[DEBUG] Missing parameters\n");
         sendResult(connfd, UPDATE_USER_ROLE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
     
@@ -1269,7 +1265,7 @@ void handleChangeUserRole(MYSQL *conn, int connfd) {
     if(new_role < 0 || new_role > 2) {
         printf("[DEBUG] Invalid role: %d\n", new_role);
         sendResult(connfd, UPDATE_USER_ROLE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
         return;
     }
     
@@ -1280,10 +1276,10 @@ void handleChangeUserRole(MYSQL *conn, int connfd) {
     if(mysql_query(conn, query) == 0 && mysql_affected_rows(conn) > 0){
         printf("[DEBUG] Update successful, affected rows: %lu\n", mysql_affected_rows(conn));
         sendResult(connfd, UPDATE_USER_ROLE_SUCCESS);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     } else {
         printf("[DEBUG] Update failed: %s\n", mysql_error(conn));
         sendResult(connfd, UPDATE_USER_ROLE_FAIL);
-        sendMessage(connfd, MSG_END);
+        // sendMessage(connfd, MSG_END);
     }
 }

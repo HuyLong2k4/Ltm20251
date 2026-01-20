@@ -143,6 +143,12 @@ void BookTicketDialog::loadFilms()
         return;
     }
     if (result == NO_FILMS) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::information(this, "Info", "No films available!");
         return;
     }
@@ -165,10 +171,22 @@ void BookTicketDialog::loadCinemas(const QString &filmId)
     cinemaListWidget->clear();
     
     if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::warning(this, "Error", "Failed to load cinemas!");
         return;
     }
     if (result == NO_CINEMAS) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::information(this, "Info", "No cinemas available for this film!");
         return;
     }
@@ -193,10 +211,22 @@ void BookTicketDialog::loadShowtimes(const QString &filmId, const QString &cinem
     showtimeListWidget->clear();
     
     if (result != BROWSE_TIME_SUCCESS && result != NO_SHOWTIMES) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::warning(this, "Error", "Failed to load showtimes!");
         return;
     }
     if (result == NO_SHOWTIMES) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::information(this, "Info", "No showtimes available!");
         return;
     }
@@ -219,14 +249,32 @@ void BookTicketDialog::loadSeats(const QString &showtimeId)
     seatListWidget->clear();
     
     if (result == INVALID_REQUEST || result == INVALID_SHOWTIME) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::warning(this, "Error", "Invalid showtime!");
         return;
     }
     if (result == NO_SEATS_AVAILABLE) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::information(this, "Info", "No seats available!");
         return;
     }
     if (result != VIEW_CHAIR_SUCCESS) {
+        // Read MSG_END to prevent socket desync
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
         QMessageBox::warning(this, "Error", "Failed to load seats!");
         return;
     }
