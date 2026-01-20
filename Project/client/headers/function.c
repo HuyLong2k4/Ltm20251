@@ -20,11 +20,11 @@ void handleLogin(int sockfd, char *username, char *password, char *message, int 
     sendMessage(sockfd, message);
     *login_status = recvResult(sockfd);
     if(*login_status == LOGIN_FAIL){
-        printf("%s\n", LOGIN_FAIL_MESSAGE);
+        printf("Your username or password is incorrect!!\n");
     }else if(*login_status == LOGIN_ALREADY){
-        printf("%s\n", LOGIN_ALREADY_MESSAGE);
+        printf("Your account is being used in another address!!\n");
     }else{
-        printf("%s\n", LOGIN_SUCCESS_MESSAGE);
+        printf("You have logged in successfully!!\n");
     }
 }
 
@@ -37,9 +37,9 @@ void handleRegister(int sockfd, char *message){
 
     int result = recvResult(sockfd);
     if (result == REGISTER_SUCCESS) {
-        printf(REGISTER_SUCCESS_MESSAGE);
+        printf("You have registered successfully!!\n");
     } else {
-        printf(REGISTER_FAIL_MESSAGE);
+        printf("Username has been existed!!\n");
     }
 }
 
@@ -86,7 +86,7 @@ void handleLogout(int sockfd, char *message){
     makeLogoutMessage(message);
     sendMessage(sockfd, message);
     recvResult(sockfd);
-    printf(LOGOUT_SUCCESS_MESSAGE);
+    printf("You have been successfully logged out!!\n");
 }
 
 void handleChangePassword(int sockfd, char *username, char *message){
@@ -98,9 +98,9 @@ void handleChangePassword(int sockfd, char *username, char *message){
     int result = recvResult(sockfd);
     // printf("%d\n", result);
     if (result == CHANGE_PASSWORD_SUCCESS) {
-        printf(CHANGE_PASSWORD_SUCCESS_MESSAGE);
+        printf("Changed password successfully\n");
     } else {
-        printf(CHANGE_PASSWORD_FAIL_MESSAGE);
+        printf("Changed password fail!!\n");
     }
 }
 
@@ -753,11 +753,11 @@ void handleAddFilm(int sockfd) {
     // 4. Receive result from server
     result = recvResult(sockfd);
     if (result == ADD_FILM_SUCCESS) {
-        printf(ADD_FILM_SUCCESS_MESSAGE);
+        printf("Add new film successfully!!\n");
     } else if (result == FILM_EXISTS) {
-        printf(FILM_EXISTS_MESSAGE);
+        printf("Film already exists in the system!!\n");
     } else if (result == ADD_FILM_FAIL) {
-        printf(ADD_FILM_FAIL_MESSAGE);
+        printf("Add new film failed!!\n");
     }
 
 }
