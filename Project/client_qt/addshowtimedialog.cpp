@@ -1,5 +1,6 @@
 #include "addshowtimedialog.h"
 #include "responsecodes.h"
+#include <QDebug>
 
 extern "C" {
     #include "../lib/socket/socket.h"
@@ -385,6 +386,13 @@ void AddShowTimeDialog::onAddShowTimeClicked()
     
     QString datetime = datetimeEdit->dateTime().toString("yyyy-MM-dd HH:mm:ss");
     
+    // Debug: Show what we're sending
+    qDebug() << "Adding showtime:";
+    qDebug() << "  Film ID:" << selectedFilmId;
+    qDebug() << "  Cinema ID:" << selectedCinemaId;
+    qDebug() << "  Room ID:" << selectedRoomId;
+    qDebug() << "  DateTime:" << datetime;
+    
     // Confirm with user
     QMessageBox::StandardButton reply = QMessageBox::question(
         this,
@@ -414,15 +422,20 @@ void AddShowTimeDialog::onAddShowTimeClicked()
             selectedRoomId.toUtf8().constData(),
             datetime.toUtf8().constData());
     
+    qDebug() << "Sending message:" << message;
+    
     sendMessage(sockfd, message);
     
     // Receive response
     int result = recvResult(sockfd);
     
+    qDebug() << "Server response code:" << result;
+    
     if (result == ADD_SHOWTIME_SUCCESS) {
         QMessageBox::information(this, "Success", 
                                "Show time added successfully!");
         // Refresh showtimes table
+        qDebug() << "Refreshing showtimes for room:" << selectedRoomId;
         loadShowtimes(selectedRoomId);
     } else {
         QString errorMsg;
