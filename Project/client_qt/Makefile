@@ -590,6 +590,7 @@ admindialog.o: admindialog.cpp admindialog.h \
 managerdialog.o: managerdialog.cpp managerdialog.h \
 		responsecodes.h \
 		browsefilmdialog.h \
+		addshowtimedialog.h \
 		../client/headers/menu.h \
 		../lib/socket/socket.h \
 		../lib/messages/message.h

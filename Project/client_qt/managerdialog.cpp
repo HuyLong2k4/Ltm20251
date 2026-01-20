@@ -1,6 +1,7 @@
 #include "managerdialog.h"
 #include "responsecodes.h"
 #include "browsefilmdialog.h"
+#include "addshowtimedialog.h"
 
 extern "C" {
     #include "../client/headers/menu.h"
@@ -31,6 +32,10 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
     addFilmBtn->setStyleSheet("background-color: #5cb85c; color: white; padding: 15px; font-weight: bold; font-size: 14px;");
     addFilmBtn->setMinimumHeight(50);
     
+    addShowTimeBtn = new QPushButton("Add Show Time", this);
+    addShowTimeBtn->setStyleSheet("background-color: #f0ad4e; color: white; padding: 15px; font-weight: bold; font-size: 14px;");
+    addShowTimeBtn->setMinimumHeight(50);
+    
     browseFilmsBtn = new QPushButton("Browse Films", this);
     browseFilmsBtn->setStyleSheet("background-color: #5bc0de; color: white; padding: 15px; font-weight: bold; font-size: 14px;");
     browseFilmsBtn->setMinimumHeight(50);
@@ -44,6 +49,7 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
     mainLayout->addWidget(userLabel);
     mainLayout->addSpacing(30);
     mainLayout->addWidget(addFilmBtn);
+    mainLayout->addWidget(addShowTimeBtn);
     mainLayout->addWidget(browseFilmsBtn);
     mainLayout->addStretch();
     mainLayout->addWidget(logoutBtn);
@@ -53,6 +59,7 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
     
     // Connect signals
     connect(addFilmBtn, &QPushButton::clicked, this, &ManagerDialog::onAddFilmClicked);
+    connect(addShowTimeBtn, &QPushButton::clicked, this, &ManagerDialog::onAddShowTimeClicked);
     connect(browseFilmsBtn, &QPushButton::clicked, this, &ManagerDialog::onBrowseFilmsClicked);
     connect(logoutBtn, &QPushButton::clicked, this, &ManagerDialog::onLogoutClicked);
 }
@@ -60,6 +67,12 @@ ManagerDialog::ManagerDialog(int sockfd, const QString &username, QWidget *paren
 void ManagerDialog::onAddFilmClicked()
 {
     showAddFilmDialog();
+}
+
+void ManagerDialog::onAddShowTimeClicked()
+{
+    AddShowTimeDialog dialog(sockfd, this);
+    dialog.exec();
 }
 
 void ManagerDialog::onBrowseFilmsClicked()
