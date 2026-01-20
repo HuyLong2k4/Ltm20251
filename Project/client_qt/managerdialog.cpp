@@ -129,6 +129,13 @@ void ManagerDialog::showAddFilmDialog()
                 categoryCombo->addItem(name, id);
             }
         }
+    } else {
+        // Read MSG_END on error
+        while (true) {
+            memset(message, 0, sizeof(message));
+            recvMessage(sockfd, message);
+            if (strcmp(message, "END") == 0) break;
+        }
     }
     
     if (categoryCombo->count() == 0) {

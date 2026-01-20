@@ -79,24 +79,6 @@
 #define SHOW_TIME_FAIL 2092
 
 
-// Message constants
-#define MSG_CANT_LOAD_CATEGORIES "Can't load the list of categories!"
-#define MSG_NO_CATEGORIES "No categories available!"
-#define MSG_CANT_LOAD_CINEMAS "Can't load the list of cinemas!"
-#define MSG_NO_CINEMAS "No cinemas available!"
-#define MSG_CANT_LOAD_SHOWTIMES "Can't load the list of showtimes!"
-#define MSG_NO_SHOWTIMES "No showtimes available!"
-#define MSG_CANT_LOAD_FILMS "Can't load the list of films!"
-#define MSG_NO_FILMS "No films available!"
-#define MSG_CANT_LOAD_SEATS "Can't load the list of seats!"
-#define MSG_NO_SEATS "No seats available!"
-#define MSG_CANT_LOAD_ROOMS "Can't load the list of rooms!"
-#define MSG_NO_ROOMS "No rooms available in this cinema."
-#define MSG_NO_TICKETS "No tickets found."
-#define MSG_FAILED_RETRIEVE "Failed to retrieve tickets."
-#define MSG_TICKET_NOT_FOUND "Ticket not found!"
-#define MSG_INVALID_CINEMA "ERROR: Invalid cinema ID!"
-#define MSG_FAILED_ROOMS "Failed to retrieve rooms."
 #define MSG_END "END"
 
 
@@ -868,7 +850,6 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
             mysql_free_result(result);
             printf("[DEBUG] Film already exists\n");
             sendResult(connfd, ADD_FILM_FAIL);
-            sendMessage(connfd, MSG_END);
             return;
         }
         mysql_free_result(result);
@@ -883,7 +864,6 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
             mysql_free_result(result);
             printf("[DEBUG] Category does not exist\n");
             sendResult(connfd, ADD_FILM_FAIL);
-            sendMessage(connfd, MSG_END);
             return;
         }
         mysql_free_result(result);
@@ -900,11 +880,9 @@ void handleAddFilm(MYSQL *conn, int connfd, char *title, char *category_id, char
         int film_id = mysql_insert_id(conn);
         printf("[LOG] Added film: %s (ID: %d)\n", title, film_id);
         sendResult(connfd, ADD_FILM_SUCCESS);
-        sendMessage(connfd, MSG_END);
     } else {
         printf("[ERROR] Failed to add film: %s\n", mysql_error(conn));
         sendResult(connfd, ADD_FILM_FAIL);
-        sendMessage(connfd, MSG_END);
     }
 }
 
