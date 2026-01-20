@@ -2,6 +2,7 @@
 #include <QHeaderView>
 #include <QInputDialog>
 #include <QDebug>
+#include "responsecodes.h"
 
 extern "C" {
     #include "../client/headers/menu.h"

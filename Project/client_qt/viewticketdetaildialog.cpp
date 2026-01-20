@@ -3,6 +3,7 @@
 
 extern "C" {
     #include "../lib/socket/socket.h"
+    
 }
 
 ViewTicketDetailDialog::ViewTicketDetailDialog(int sockfd, const QString &ticketId, QWidget *parent)

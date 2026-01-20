@@ -77,4 +77,12 @@
 #define INVALID_DATETIME_FORMAT 3026
 #define SCHEDULING_CONFLICT 3027
 
+// Message strings
+#define LOGIN_FAIL_MESSAGE "Your username or password is incorrect!"
+#define LOGIN_ALREADY_MESSAGE "Your account is being used in another address!"
+#define REGISTER_SUCCESS_MESSAGE "You have registered successfully!"
+#define REGISTER_FAIL_MESSAGE "Username has been existed!"
+#define CHANGE_PASSWORD_SUCCESS_MESSAGE "Changed password successfully!"
+#define CHANGE_PASSWORD_FAIL_MESSAGE "Changed password failed!"
+
 #endif // RESPONSECODES_H

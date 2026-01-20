@@ -25,7 +25,7 @@ typedef struct {
     pthread_mutex_t lock;
 } ShowtimeCache;
 
-// Global cache (declare extern để dùng ở nhiều file)
+// Global cache (declare extern để có thể dùng tại nhiều file)
 extern ShowtimeCache g_showtimes[MAX_SHOWTIMES];
 extern int g_showtime_count;
 

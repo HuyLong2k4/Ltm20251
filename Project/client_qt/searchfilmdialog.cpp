@@ -1,4 +1,5 @@
 #include "searchfilmdialog.h"
+#include "responsecodes.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>

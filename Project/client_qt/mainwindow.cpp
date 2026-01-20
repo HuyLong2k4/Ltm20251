@@ -8,6 +8,7 @@
 #include "viewticketsdialog.h"
 #include "admindialog.h"
 #include "managerdialog.h"
+#include "responsecodes.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 

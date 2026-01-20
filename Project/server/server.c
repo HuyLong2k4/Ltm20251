@@ -12,11 +12,11 @@
 #include "headers/function.h"
 #include "headers/queryUser.h"
 #include "headers/logger.h"
+#include "headers/cache.h"
 #include "../db/connect.h"
 
 #define BACKLOG 20
 
-// Đảm bảo các define này khớp với menu.h ở Client
 #define LOGIN_SUCCESS_USER 1010
 #define LOGIN_SUCCESS_MANAGER 1011
 #define LOGIN_SUCCESS_ADMIN 1012
@@ -25,7 +25,7 @@
 #define REGISTER_FAIL 2021
 #define LOGOUT_SUCCESS 1030
 
-// --- KHAI BÁO MUTEX ĐỂ BẢO VỆ SHARED RESOURCES ---
+// DÙNG MUTEX ĐỂ BẢO VỆ SHARED RESOURCES 
 pthread_mutex_t db_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t arr_lock = PTHREAD_MUTEX_INITIALIZER;  // Protect logged users list
 pthread_mutex_t head_lock = PTHREAD_MUTEX_INITIALIZER; // Protect user linked list
@@ -62,7 +62,7 @@ int main(int argc, char **argv){
     arr = createListLoginedAccount(); 
     selectUser(init_conn, &head, (user){0});
 
-    // *** THÊM DÒNG NÀY: Khởi tạo cache ***
+    // Khởi tạo cache
     initCache(init_conn);
 
     mysql_close(init_conn); // Đóng sau khi init xong
@@ -78,13 +78,12 @@ int main(int argc, char **argv){
         return 0;
     }
 
-    // có thể tắt bật server thoải mái mà không bị lỗi "Address already in use".
+    
     int opt = 1;
     if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
-    // ---------------------------------------------
 
     bzero(&server, sizeof(server));
     server.sin_family = AF_INET;
@@ -149,11 +148,10 @@ void *handleCommunicate(void* arg) {
     while(1){
         memset(message, 0, 255);
         
-        // Giả sử hàm recvMessage trả về số byte nhận được hoặc <=0 nếu ngắt kết nối
-        // Cần kiểm tra kỹ hàm recvMessage của bạn
+    
         recvMessage(connfd, message); 
         
-        // Log message nhận được
+        // message nhận được
         if (strlen(message) > 0) {
             logMessage(connfd, "RECV", message);
         }
@@ -161,7 +159,7 @@ void *handleCommunicate(void* arg) {
         // Nếu message rỗng hoặc client đóng kết nối
         if (strlen(message) == 0) {
             printf("Client (fd: %d) disconnected unexpected.\n", connfd);
-            // Auto-logout user if they were logged in
+            // Auto-logout if they were logged in
             if (strlen(username) > 0) {
                 handleLogout(connfd, &arr, username);
             }
@@ -177,7 +175,7 @@ void *handleCommunicate(void* arg) {
             break;
         }
         
-        strcpy(message_copy, message); // Lưu bản sao để sau cần debug
+        strcpy(message_copy, message); 
 
         char *cmd = strtok(message, "\r\n");
         if(cmd == NULL) {
@@ -188,22 +186,18 @@ void *handleCommunicate(void* arg) {
         
         /* ========== AUTHENTICATION ========== */
         if(strcmp(cmd, "LOGIN") == 0){
-            char *username_param = strtok(NULL, "\r\n");
-            char *password = strtok(NULL, "\r\n");
-            if(username_param && password) {
-                strcpy(username, username_param); // Lưu username sau khi login
-                handleLogin(connfd, &arr, &head, username_param, password);
-            }
+            char username_param[256];
+            char password[256];
+            resolveLoginMessage(username_param, password);
+            strcpy(username, username_param); // Lưu username sau khi login
+            handleLogin(connfd, &arr, &head, username_param, password);
             
         } else if(strcmp(cmd, "REGISTER") == 0){
-            char *name = strtok(NULL, "\r\n");
-            char *reg_username = strtok(NULL, "\r\n");
-            char *reg_password = strtok(NULL, "\r\n");
-            if(name && reg_username && reg_password) {
-                handleRegister(conn, connfd, &head, name, reg_username, reg_password);
-            } else {
-                sendResult(connfd, REGISTER_FAIL);
-            }
+            char name[256];
+            char reg_username[256];
+            char reg_password[256];
+            resolveRegisterMessage(name, reg_username, reg_password);
+            handleRegister(conn, connfd, &head, name, reg_username, reg_password);
             
         } else if(strcmp(cmd, "LOGOUT") == 0){
             handleLogout(connfd, &arr, username);
@@ -217,28 +211,25 @@ void *handleCommunicate(void* arg) {
             handleShowCategory(conn, connfd);
     
         } else if(strcmp(cmd, "BROWSE_CATEGORY") == 0){  
-            char *category_id = strtok(NULL, "\r\n");
-            if(category_id) {
-                handleBrowseCategory(conn, connfd, category_id);
-            }
+            char category_id[256];
+            resolveBrowseCategoryMessage(category_id);
+            handleBrowseCategory(conn, connfd, category_id);
 
         } else if(strcmp(cmd, "SHOW_CINEMAS") == 0){  
             handleShowCinema(conn, connfd);
 
         } else if(strcmp(cmd, "BROWSE_CINEMA") == 0){ 
-            char *cinema_id = strtok(NULL, "\r\n");
-            if(cinema_id) {
-                handleBrowseCinema(conn, connfd, cinema_id);
-            }
+            char cinema_id[256];
+            resolveBrowseCinemaMessage(cinema_id);
+            handleBrowseCinema(conn, connfd, cinema_id);
 
         } else if(strcmp(cmd, "SHOW_PREMIERED_TIME") == 0){
             handleShowPremieredTime(conn, connfd);
 
         } else if(strcmp(cmd, "BROWSE_PREMIERED_TIME") == 0){  
-            char *time_slot = strtok(NULL, "\r\n");
-            if(time_slot) {
-                handleBrowseShowTime(conn, connfd, time_slot);
-            }
+            char time_slot[256];
+            resolveBrowsePremieredTimeMessage(time_slot);
+            handleBrowseShowTime(conn, connfd, time_slot);
             
         /* ========== BOOK TICKET ========== */
         } else if(strcmp(cmd, "SHOW_FILMS") == 0){  
@@ -254,35 +245,32 @@ void *handleCommunicate(void* arg) {
             handleShowSeat(conn, connfd);
 
         } else if (strcmp(cmd, "BOOK_TICKET") == 0) {
-            char *showtime_id = strtok(NULL, "\r\n");
-            char *seat_id = strtok(NULL, "\r\n");
-            if(showtime_id && seat_id) {
-                handleBookTicket(conn, connfd, username, showtime_id, seat_id);
-            }
+            char showtime_id[256];
+            char seat_id[256];
+            resolveBookTicketMessage(showtime_id, seat_id);
+            handleBookTicket(conn, connfd, username, showtime_id, seat_id);
         /* ========== SEARCH FILM ========== */
         } else if(strcmp(cmd, "SEARCH_FILM_BY_TITLE") == 0){  
-            char *title = strtok(NULL, "\r\n");
-            if(title) {
-                handleSearchFilmByTitle(conn, connfd, title);
-            }
+            char title[256];
+            resolveSearchFilmByTitleMessage(title);
+            handleSearchFilmByTitle(conn, connfd, title);
         /* ========== ADD FILM ========== */
         } else if(strcmp(cmd, "ADD_FILM") == 0) {
-            char *title = strtok(NULL, "\r\n");
-            char *category_id = strtok(NULL, "\r\n");
-            char *show_time = strtok(NULL, "\r\n");
-            if(title && category_id && show_time) {
-                printf("[DEBUG] ADD_FILM params - title: %s, category_id: %s, show_time: %s\n", title, category_id, show_time);
-                handleAddFilm(conn, connfd, title, category_id, show_time);
-            }
+            char title[256];
+            char category_id[256];
+            char show_time[256];
+            resolveAddFilmMessage(title, category_id, show_time);
+            printf("[DEBUG] ADD_FILM params - title: %s, category_id: %s, show_time: %s\n", title, category_id, show_time);
+            handleAddFilm(conn, connfd, title, category_id, show_time);
         /* ========== VIEW TICKETS ========== */
         } else if(strcmp(cmd, "VIEW_TICKETS") == 0) {
-            char *username = strtok(NULL, "\r\n");
-            if (username)
-                handleViewTickets(conn, connfd, username);
+            char username[256];
+            resolveViewTicketsMessage(username);
+            handleViewTickets(conn, connfd, username);
         } else if(strcmp(cmd, "VIEW_TICKET_DETAIL") == 0) {
-            char *ticket_id = strtok(NULL, "\r\n");
-            if (ticket_id)
-                handleViewTicketDetail(conn, connfd, ticket_id);
+            char ticket_id[256];
+            resolveViewTicketDetailMessage(ticket_id);
+            handleViewTicketDetail(conn, connfd, ticket_id);
         /* ========== ADD SHOW TIME ========== */
         // } else if(strcmp(cmd, "SHOW_FILMS") == 0){  
         //     handleShowFilm(conn, connfd);
@@ -293,21 +281,20 @@ void *handleCommunicate(void* arg) {
         //     handleShowCinema(conn, connfd);
         // } Có dùng hàm này được ghi ở trên BROWE FILM
         } else if(strcmp(cmd, "SHOW_ROOMS_BY_CINEMA") == 0) {
-            char *cinema_id = strtok(NULL, "\r\n");
-            if (cinema_id)
-                handleShowRoomsByCinema(conn, connfd, cinema_id);
+            char cinema_id[256];
+            resolveShowRoomsByCinemaMessage(cinema_id);
+            handleShowRoomsByCinema(conn, connfd, cinema_id);
         } else if(strcmp(cmd, "SHOW_SHOWTIMES_BY_ROOM") == 0) {
-            char *room_id = strtok(NULL, "\r\n");
-            if (room_id)
-                handleShowShowtimesByRoom(conn, connfd, room_id);
+            char room_id[256];
+            resolveShowShowtimesByRoomMessage(room_id);
+            handleShowShowtimesByRoom(conn, connfd, room_id);
         } else if(strcmp(cmd, "ADD_SHOWTIME") == 0) {
-            char *film_id = strtok(NULL, "\r\n");
-            char *cinema_id = strtok(NULL, "\r\n");
-            char *room_id = strtok(NULL, "\r\n");
-            char *start_datetime = strtok(NULL, "\r\n");
-            if(film_id && cinema_id && room_id && start_datetime) {
-                handleAddShowTime(conn, connfd, film_id, cinema_id, room_id, start_datetime);
-            }
+            char film_id[256];
+            char cinema_id[256];
+            char room_id[256];
+            char start_datetime[256];
+            resolveAddShowTimeMessage(film_id, cinema_id, room_id, start_datetime);
+            handleAddShowTime(conn, connfd, film_id, cinema_id, room_id, start_datetime);
         /* ========== ADMIN MANAGEMENT ========== */
         } else if(strcmp(cmd, "SHOW_ALL_USERS") == 0){
             handleShowAllUsers(conn, connfd);

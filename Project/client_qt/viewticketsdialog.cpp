@@ -88,32 +88,14 @@ void ViewTicketsDialog::loadTickets()
     int result = recvResult(sockfd);
     
     if (result == NO_TICKETS) {
-        // Read END marker
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         statusLabel->setText("No tickets found.");
         return;
     }
     if (result == FAILED_RETRIEVE) {
-        // Read END marker
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         statusLabel->setText("Failed to retrieve tickets.");
         return;
     }
     if (result != VIEW_CHAIR_SUCCESS) {
-        // Read END marker
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         statusLabel->setText("Error loading tickets!");
         return;
     }

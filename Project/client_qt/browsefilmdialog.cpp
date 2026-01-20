@@ -58,20 +58,8 @@ void BrowseFilmDialog::setupUI()
     
     int result = recvResult(sockfd);
     if (result != SHOW_CATEGORY_SUCCESS && result != NO_CATEGORIES) {
-        // Read END marker
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         QMessageBox::warning(this, "Error", "Failed to load categories!");
     } else if (result == NO_CATEGORIES) {
-        // Read END marker
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         QMessageBox::information(this, "Info", "No categories available!");
     } else {
         while (true) {
@@ -112,20 +100,8 @@ void BrowseFilmDialog::setupUI()
     
     result = recvResult(sockfd);
     if (result != BROWSE_THEATER_SUCCESS && result != NO_CINEMAS) {
-        // Read END marker
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         QMessageBox::warning(this, "Error", "Failed to load cinemas!");
     } else if (result == NO_CINEMAS) {
-        // Read END marker
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         QMessageBox::information(this, "Info", "No cinemas available!");
     } else {
         while (true) {
@@ -185,12 +161,6 @@ void BrowseFilmDialog::onBrowseByCategory()
             filmByCategoryListWidget->addItem(QString::fromUtf8(message));
         }
     } else {
-        // Read END marker even on failure
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         filmByCategoryListWidget->addItem("No films found in this category!");
     }
 }
@@ -227,12 +197,6 @@ void BrowseFilmDialog::onBrowseByCinema()
             filmByCinemaListWidget->addItem(QString::fromUtf8(message));
         }
     } else {
-        // Read END marker even on failure
-        while (true) {
-            memset(message, 0, sizeof(message));
-            recvMessage(sockfd, message);
-            if (strcmp(message, "END") == 0) break;
-        }
         filmByCinemaListWidget->addItem("No films found in this cinema!");
     }
 }

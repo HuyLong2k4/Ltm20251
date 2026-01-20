@@ -1,4 +1,5 @@
 #include "changepassworddialog.h"
+#include "responsecodes.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>

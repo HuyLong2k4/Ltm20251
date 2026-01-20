@@ -1,4 +1,5 @@
 #include "registerdialog.h"
+#include "responsecodes.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>

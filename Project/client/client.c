@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include "headers/function.h"
 #include "headers/menu.h"
+#include "../lib/resultCodes.h"
 
 #define BUFSIZE 1024
 #define STR_LEN 255

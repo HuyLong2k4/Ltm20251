@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Define global variables
+// Global cache for showtimes
 ShowtimeCache g_showtimes[MAX_SHOWTIMES];
 int g_showtime_count = 0;
 
@@ -112,5 +112,5 @@ void initCache(MYSQL *conn) {
     loadShowtimes(conn);
     loadSeats(conn);
     loadTickets(conn);
-    printf("[CACHE] Cache initialization complete!\n");
+    printf("[CACHE] Cache initialization complete!!!\n");
 }
