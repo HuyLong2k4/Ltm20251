@@ -39,4 +39,4 @@ private:
     QPushButton *logoutBtn;
 };
 
-#endif // MANAGERDIALOG_H
+#endif

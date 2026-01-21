@@ -325,7 +325,6 @@ void BookTicketDialog::onBookTicket()
     
     QString selectedText = item->text();
     
-    // Extract seat ID from "ID: X  -  Seat: Y" format
     QStringList parts = selectedText.split("-");
     if (parts.isEmpty()) return;
     

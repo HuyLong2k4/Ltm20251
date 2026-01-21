@@ -53,4 +53,4 @@ private:
     QString selectedRoomId;
 };
 
-#endif // ADDSHOWTIMEDIALOG_H
+#endif

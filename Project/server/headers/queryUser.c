@@ -97,26 +97,25 @@ int checkLogin(node head, char **username, char *password, listLoginedAccount *a
         if((strcmp(*username, p->data.username) == 0) && (strcmp(password, p->data.password) == 0)){
             if(p->data.role_id == 0){
                 printf("%s\n", LOGIN_SUCCESS_ADMIN);
-                return 0;  // Admin role
+                return 0; 
             }else if(p->data.role_id == 1){
                 printf("%s\n", LOGIN_SUCCESS_MANAGER);
-                return 1;  // Manager role
+                return 1;
             }else if(p->data.role_id == 2){
                 printf("%s\n", LOGIN_SUCCESS_USER);
-                return 2;  // User role
+                return 2;
             }            
         }
         p = p->next;
     }
 
     printf("%s\n", LOGIN_FAIL);
-    return -1;  // Login failed
+    return -1;
 }
 
 int registerUser(MYSQL *connection, user newUser) {
     char query[1024];
 
-    // Validate input
     if (strlen(newUser.username) == 0 || strlen(newUser.name) == 0 || strlen(newUser.password) == 0) {
         printf("Registration failed: Empty fields\n");
         return 0;
@@ -165,7 +164,6 @@ int changePassword(MYSQL *connection, char *username, char *oldPassword, char *n
     return 1;
 }
 
-// Lấy user_id từ username
 int getUserIdByUsername(MYSQL *conn, const char *username) {
     char query[256];
     sprintf(query, "SELECT id FROM users WHERE username='%s'", username);

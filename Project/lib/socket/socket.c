@@ -6,8 +6,6 @@
 
 #define BUFSIZE 4096
 
-// fd là số hiệu đường ống mà send hoặc recv gửi vào
-
 //gửi chuỗi ký tự
 void sendMessage(int fd, char *message){
     int length = htonl(strlen(message));
@@ -23,10 +21,10 @@ void recvMessage(int fd, char *message){
     recv(fd, &length, sizeof(length), 0);
     int msg_len = ntohl(length);
     if (msg_len >= BUFSIZE) {
-        msg_len = BUFSIZE - 1; // Prevent overflow
+        msg_len = BUFSIZE - 1;
     }
     recv(fd, buffer, msg_len, 0);
-    buffer[msg_len] = '\0'; // Ensure null termination
+    buffer[msg_len] = '\0';
     strcpy(message, buffer);
 }
 

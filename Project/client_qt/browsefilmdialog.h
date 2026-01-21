@@ -43,4 +43,4 @@ private:
     QPushButton *browseCinemaBtn;
 };
 
-#endif // BROWSEFILMDIALOG_H
+#endif

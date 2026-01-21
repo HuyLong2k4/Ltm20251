@@ -42,4 +42,4 @@ private:
     QPushButton *logoutBtn;
 };
 
-#endif // ADMINDIALOG_H
+#endif

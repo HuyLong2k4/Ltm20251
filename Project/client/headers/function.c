@@ -616,7 +616,7 @@ void handleRequestManager(int sockfd, char *username, char *message) {
 void handleAddFilm(int sockfd) {
     char title[255];
     char category_id[20];
-    char show_time[20]; // in minutes
+    char show_time[20];
     char message[2048];
 
     printf("\n=== ADD NEW FILM ===\n");

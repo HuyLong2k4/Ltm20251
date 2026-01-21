@@ -31,4 +31,4 @@ private:
     int loginResult;
 };
 
-#endif // LOGINDIALOG_H
+#endif

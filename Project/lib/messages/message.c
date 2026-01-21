@@ -147,19 +147,19 @@ void makeBrowseFollowPremieredTimeMessage(char *premiered_time_id, char *message
 }
 
 void resolveBrowseCategoryMessage(char *category_id) {
-    char *tmp_category_id = strtok(NULL, "\r\n");    // tách ID
+    char *tmp_category_id = strtok(NULL, "\r\n");
     if(tmp_category_id) strncpy(category_id, tmp_category_id, 255);
-    else category_id[0] = '\0'; // phòng trường hợp null
+    else category_id[0] = '\0';
 }
 
 void resolveBrowseCinemaMessage(char *cinema_id) {
-    char *tmp_cinema_id = strtok(NULL, "\r\n");    // tách ID
+    char *tmp_cinema_id = strtok(NULL, "\r\n"); 
     if(tmp_cinema_id) strncpy(cinema_id, tmp_cinema_id, 255);
     else cinema_id[0] = '\0';
 }
 
 void resolveBrowsePremieredTimeMessage(char *time_slot) {
-    char *tmp_time_slot = strtok(NULL, "\r\n");    // tách ID
+    char *tmp_time_slot = strtok(NULL, "\r\n"); 
     if(tmp_time_slot) strncpy(time_slot, tmp_time_slot, 255);
     else time_slot[0] = '\0';
 }

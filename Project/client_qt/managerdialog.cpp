@@ -96,7 +96,7 @@ void ManagerDialog::onLogoutClicked()
         makeLogoutMessage(message);
         sendMessage(sockfd, message);
         
-        accept(); // Close dialog and return to welcome screen
+        accept();
     }
 }
 

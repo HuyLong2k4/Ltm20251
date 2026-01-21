@@ -56,36 +56,8 @@ void viewChangePassword(char *oldPassword, char *newPassword) {
 void getInput(const char *prompt, char *out, int max_len) {
     printf("%s", prompt);
     fgets(out, max_len, stdin);
-    out[strcspn(out, "\n")] = 0; // bỏ '\n'
+    out[strcspn(out, "\n")] = 0;
 }
-
-/*----------ADD FILM--------*/
-// void addNewFilm(int sockfd, char title[], char category_id[], char show_time[], char description[]){
-//     printf("Title: ");
-//     title[0] = '\0';
-//     fgets(title, 255, stdin);
-
-//     char *message = (char *)malloc(255 * sizeof(char));
-//     makeShowCategoryMessage(message);
-//     sendMessage(sockfd, message);
-//     recvMessage(sockfd, message);
-
-//     printf("Category: \n");
-//     printf("%s\n", message);
-//     printf("Choice: ");
-//     category_id[0] = '\0';
-//     fgets(category_id, 255, stdin);
-
-
-//     printf("Show time: ");
-//     show_time[0] = '\0';
-//     fgets(show_time, 255, stdin);    
-
-//     printf("Description: ");
-//     description[0] = '\0';
-//     fgets(description, 2048, stdin);
-
-// }
 
 void addNewFilm(int sockfd, char title[], char category_id[], char show_time[], char description[]) {
 

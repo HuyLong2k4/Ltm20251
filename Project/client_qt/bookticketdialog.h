@@ -68,4 +68,4 @@ private:
     QString selectedSeatId;
 };
 
-#endif // BOOKTICKETDIALOG_H
+#endif

@@ -28,4 +28,4 @@ private:
     int sockfd;
 };
 
-#endif // CHANGEPASSWORDDIALOG_H
+#endif

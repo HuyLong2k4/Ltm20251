@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    // Khởi tạo kết nối Socket
+ 
     int sockfd;
     struct sockaddr_in servaddr;
     
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    // Nhận tin nhắn chào mừng từ Server
+
     char conn_mess[BUFSIZE];
     memset(conn_mess, 0, BUFSIZE);
 
@@ -48,7 +48,6 @@ int main(int argc, char **argv) {
     int choice;
     int login_status = 0;
     
-    // Cấp phát tĩnh (Stack) - Tự động giải phóng khi hàm main kết thúc
     char message[STR_LEN];
     char username[STR_LEN];
     char password[STR_LEN];
@@ -61,7 +60,6 @@ int main(int argc, char **argv) {
 
         switch (choice) {
             case 1: {
-                // Reset buffer trước khi dùng cho chắc chắn
                 memset(message, 0, STR_LEN);
                 memset(username, 0, STR_LEN);
                 memset(password, 0, STR_LEN);

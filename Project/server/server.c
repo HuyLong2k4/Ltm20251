@@ -25,8 +25,6 @@
 #define REGISTER_FAIL 2021
 #define LOGOUT_SUCCESS 1030
 
-// DÙNG MUTEX ĐỂ BẢO VỆ SHARED RESOURCES 
-pthread_mutex_t db_lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t arr_lock = PTHREAD_MUTEX_INITIALIZER;  // Protect logged users list
 pthread_mutex_t head_lock = PTHREAD_MUTEX_INITIALIZER; // Protect user linked list
 
@@ -65,7 +63,7 @@ int main(int argc, char **argv){
     // Khởi tạo cache
     initCache(init_conn);
 
-    mysql_close(init_conn); // Đóng sau khi init xong
+    mysql_close(init_conn); 
 
     int listenfd, *connfd;
     struct sockaddr_in server;
@@ -143,7 +141,7 @@ void *handleCommunicate(void* arg) {
 
     char message[255];
     char message_copy[255];
-    char username[255] = {0}; // Lưu user đã login
+    char username[255] = {0};
 
     while(1){
         memset(message, 0, 255);
@@ -159,7 +157,6 @@ void *handleCommunicate(void* arg) {
         // Nếu message rỗng hoặc client đóng kết nối
         if (strlen(message) == 0) {
             printf("Client (fd: %d) disconnected unexpected.\n", connfd);
-            // Auto-logout if they were logged in
             if (strlen(username) > 0) {
                 handleLogout(connfd, &arr, username);
             }
@@ -168,7 +165,6 @@ void *handleCommunicate(void* arg) {
 
         if(strcmp(message, "EXIT") == 0){
             printf("Client (fd: %d) disconnected safely.\n", connfd);
-            // Auto-logout if not already logged out
             if (strlen(username) > 0) {
                 handleLogout(connfd, &arr, username);
             }
@@ -189,7 +185,7 @@ void *handleCommunicate(void* arg) {
             char username_param[256];
             char password[256];
             resolveLoginMessage(username_param, password);
-            strcpy(username, username_param); // Lưu username sau khi login
+            strcpy(username, username_param);
             handleLogin(connfd, &arr, &head, username_param, password);
             
         } else if(strcmp(cmd, "REGISTER") == 0){
@@ -271,15 +267,6 @@ void *handleCommunicate(void* arg) {
             char ticket_id[256];
             resolveViewTicketDetailMessage(ticket_id);
             handleViewTicketDetail(conn, connfd, ticket_id);
-        /* ========== ADD SHOW TIME ========== */
-        // } else if(strcmp(cmd, "SHOW_FILMS") == 0){  
-        //     handleShowFilm(conn, connfd);
-
-        // } Có dùng hàm này được ghi ở trên BOOK TICKET
-
-        // } else if(strcmp(cmd, "SHOW_CINEMAS") == 0){  
-        //     handleShowCinema(conn, connfd);
-        // } Có dùng hàm này được ghi ở trên BROWE FILM
         } else if(strcmp(cmd, "SHOW_ROOMS_BY_CINEMA") == 0) {
             char cinema_id[256];
             resolveShowRoomsByCinemaMessage(cinema_id);

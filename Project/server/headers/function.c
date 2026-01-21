@@ -24,27 +24,23 @@ void handleLogin(int connfd, listLoginedAccount *arr, node *h, char *username, c
     printf("Login check result: %d\n", check);
 
     if (check == -1) {
-        // Login failed - wrong username/password
         pthread_mutex_unlock(&head_lock);
         pthread_mutex_unlock(&arr_lock);
         sendResult(connfd, LOGIN_FAIL);
     }
     else if (check == 0) {
-        // Admin role (role = 0)
         addToListLoginedAccount(arr, &username);
         pthread_mutex_unlock(&head_lock);
         pthread_mutex_unlock(&arr_lock);
         sendResult(connfd, LOGIN_SUCCESS_ADMIN);
     }
     else if (check == 1) {
-        // Manager role (role = 1)
         addToListLoginedAccount(arr, &username);
         pthread_mutex_unlock(&head_lock);
         pthread_mutex_unlock(&arr_lock);
         sendResult(connfd, LOGIN_SUCCESS_MANAGER);
     }
     else if (check == 2) {
-        // User role (role = 2)
         addToListLoginedAccount(arr, &username);
         pthread_mutex_unlock(&head_lock);
         pthread_mutex_unlock(&arr_lock);
@@ -568,7 +564,6 @@ void handleBookTicket(
     if (mysql_query(conn, query) == 0) {
         sendResult(connfd, BOOK_TICKET_SUCCESS);
     } else {
-        // Rollback RAM nếu db fail
         pthread_mutex_lock(&st->lock);
         seat->is_booked = 0;
         seat->user_id = 0;
@@ -910,10 +905,6 @@ void handleAddShowTime(MYSQL *conn, int connfd, char *film_id, char *cinema_id, 
         return;
     }
 
-    // 5. Check for scheduling conflicts (overlapping showtimes in the same room 15 minutes buffer)
-    // Movie A
-    // Movie B     
-    // Movie A ends -- 15 minutes -- Movie C starts -- duration -- Movie C ends -- 15 minutes -- Movie B starts 
     sprintf(query, 
         "SELECT COUNT(*) FROM showtimes "
         "WHERE room_id = %s "

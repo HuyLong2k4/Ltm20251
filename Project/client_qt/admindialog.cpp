@@ -129,10 +129,10 @@ void AdminDialog::loadAllUsers()
         
         for (int i = 0; i < userData.size(); i++) {
             QStringList fields = userData[i];
-            userTable->setItem(i, 0, new QTableWidgetItem(fields[0])); // ID
-            userTable->setItem(i, 1, new QTableWidgetItem(fields[1])); // Name
-            userTable->setItem(i, 2, new QTableWidgetItem(fields[2])); // Username
-            userTable->setItem(i, 3, new QTableWidgetItem(fields[3])); // Role
+            userTable->setItem(i, 0, new QTableWidgetItem(fields[0])); 
+            userTable->setItem(i, 1, new QTableWidgetItem(fields[1])); 
+            userTable->setItem(i, 2, new QTableWidgetItem(fields[2])); 
+            userTable->setItem(i, 3, new QTableWidgetItem(fields[3])); 
         }
         
         if (userData.size() > 0) {
@@ -186,7 +186,7 @@ void AdminDialog::onDeleteUserClicked()
         
         if (result == DELETE_USER_SUCCESS) {
             QMessageBox::information(this, "Success", "User deleted successfully!");
-            loadAllUsers(); // Refresh the list
+            loadAllUsers();
         } else {
             QMessageBox::critical(this, "Error", "Failed to delete user!");
         }
@@ -240,7 +240,7 @@ void AdminDialog::onChangeUserRoleClicked()
         
         if (result == UPDATE_USER_ROLE_SUCCESS) {
             QMessageBox::information(this, "Success", "User role changed successfully!");
-            loadAllUsers(); // Refresh the list
+            loadAllUsers();
         } else {
             QMessageBox::critical(this, "Error", "Failed to change user role!");
         }
@@ -267,6 +267,6 @@ void AdminDialog::onLogoutClicked()
         makeLogoutMessage(message);
         sendMessage(sockfd, message);
         
-        accept(); // Close dialog and return to welcome screen
+        accept(); 
     }
 }

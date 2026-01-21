@@ -156,7 +156,6 @@ void AddShowTimeDialog::loadFilms()
             break;
         }
         
-        // Parse: "1. Avatar" format
         QStringList parts = line.split(". ");
         if (parts.size() >= 2) {
             QString id = parts[0].trimmed();
@@ -200,7 +199,6 @@ void AddShowTimeDialog::loadCinemas()
             break;
         }
         
-        // Parse: "1. Cinema Name" format
         QStringList parts = line.split(". ");
         if (parts.size() >= 2) {
             QString id = parts[0].trimmed();
@@ -252,11 +250,10 @@ void AddShowTimeDialog::loadRooms(const QString &cinemaId)
             break;
         }
         
-        // Parse: "ID: 1 | Room A | 50 seats"
         QStringList parts = line.split(" | ");
         if (parts.size() >= 2) {
-            QString idPart = parts[0].trimmed();   // "ID: 1"
-            QString namePart = parts[1].trimmed(); // "Room A"
+            QString idPart = parts[0].trimmed();
+            QString namePart = parts[1].trimmed();
             
             if (idPart.contains(": ")) {
                 QString id = idPart.split(": ")[1].trimmed();
@@ -306,7 +303,6 @@ void AddShowTimeDialog::loadShowtimes(const QString &roomId)
             break;
         }
         
-        // Parse: "ID: 1 | Title: Avatar | 2025-12-30 14:00:00 - 2025-12-30 16:00:00 (120 minutes)"
         int row = showtimeTable->rowCount();
         showtimeTable->insertRow(row);
         
@@ -315,7 +311,6 @@ void AddShowTimeDialog::loadShowtimes(const QString &roomId)
             QString title = parts[1].replace("Title: ", "").trimmed();
             QString times = parts[2].trimmed();
             
-            // Split "2025-12-30 14:00:00 - 2025-12-30 16:00:00 (120 minutes)"
             QStringList timeParts = times.split(" - ");
             QString start = timeParts.size() > 0 ? timeParts[0].trimmed() : "";
             QString endPart = timeParts.size() > 1 ? timeParts[1] : "";
